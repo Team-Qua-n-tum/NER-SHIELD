@@ -13,26 +13,27 @@ export const DistrictLayer = ({
     const riskScore = feature.properties?.riskScore || 0;
     const riskLevel = feature.properties?.riskLevel || "Low";
 
+    // Keep fill opacity low so CartoDB Voyager road labels stay readable beneath
     let color = "#22c55e"; // Low risk green
-    let fillOpacity = 0.2;
+    let fillOpacity = 0.12;
 
     if (riskLevel === "Critical" || riskScore >= 80) {
       color = "#ef4444"; // Red
-      fillOpacity = 0.4;
+      fillOpacity = 0.22;
     } else if (riskLevel === "High" || riskScore >= 60) {
       color = "#f97316"; // Orange
-      fillOpacity = 0.35;
+      fillOpacity = 0.18;
     } else if (riskLevel === "Moderate" || riskScore >= 40) {
       color = "#eab308"; // Yellow
-      fillOpacity = 0.25;
+      fillOpacity = 0.14;
     }
 
     return {
       fillColor: color,
-      weight: 2,
-      opacity: 0.8,
+      weight: 2.5,
+      opacity: 1,
       color: color,
-      dashArray: "3",
+      dashArray: "4",
       fillOpacity: fillOpacity,
     };
   };

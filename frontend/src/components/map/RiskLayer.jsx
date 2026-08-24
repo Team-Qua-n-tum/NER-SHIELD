@@ -12,14 +12,14 @@ export const RiskLayer = ({
   const styleFeature = (feature) => {
     const threat = feature.properties?.threatLevel || "High";
     let color = "#ef4444"; // Red
-    let opacity = 0.4;
+    let opacity = 0.18;
 
     if (threat === "Critical") {
       color = "#dc2626";
-      opacity = 0.45;
+      opacity = 0.22;
     } else if (threat === "High") {
       color = "#f97316";
-      opacity = 0.35;
+      opacity = 0.17;
     }
 
     return {
