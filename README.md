@@ -1,6 +1,6 @@
 # NER-SHIELD
 
-**AI-Based Smart Logistics and Accessibility Intelligence Platform for the North Eastern Region (NER)**
+## AI-Based Smart Logistics and Accessibility Intelligence Platform for the North Eastern Region (NER)
 
 **SIH Problem Statement:** SIH26002
 **Theme:** Smart Automation
@@ -26,31 +26,31 @@ It monitors road accessibility, weather conditions, incidents, vehicle movement,
 
 ## Technology Stack
 
-**Frontend**
+### Frontend
 
 * React / Next.js
 * TypeScript
 * Tailwind CSS
 * Leaflet
 
-**Backend**
+### Backend
 
 * Python
 * FastAPI
 
-**AI/ML**
+### AI/ML
 
 * Python
 * Pandas
 * NumPy
 * Scikit-learn
 
-**Database**
+### Database
 
 * PostgreSQL
 * PostGIS
 
-**Tools**
+### Tools
 
 * GitHub
 * Docker
@@ -76,7 +76,7 @@ Weather / Incidents / Road Data
 
 ## Team
 
-**Team Quantum**
+### Team Quantum
 
 Developed for **Smart India Hackathon 2026 — SIH26002**.
 
