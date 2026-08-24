@@ -5,7 +5,6 @@ import {
   Waves,
   CloudRain,
   Wrench,
-  ShieldCheck,
   PlusCircle,
   Clock,
   ArrowUpRight,

@@ -1,21 +1,15 @@
 import React, { useState } from 'react';
 import {
-  Layers,
   MapPin,
-  Eye,
-  EyeOff,
   Navigation,
   AlertTriangle,
   Truck,
   ShieldAlert,
-  Info,
   Maximize2,
   X,
-  ExternalLink,
 } from 'lucide-react';
 import { NERMap } from '../map';
 import { Badge } from '../ui/Badge';
-import { Button } from '../ui/Button';
 
 export const OperationsMap = ({
   selectedRouteId,

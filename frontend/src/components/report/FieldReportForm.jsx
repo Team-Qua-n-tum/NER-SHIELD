@@ -3,7 +3,6 @@ import {
   FileText,
   MapPin,
   Camera,
-  Upload,
   AlertTriangle,
   User,
   Phone,
@@ -11,14 +10,10 @@ import {
   CheckCircle2,
   X,
   Navigation,
-  Clock,
-  Sparkles,
 } from 'lucide-react';
-import { Card } from '../ui/Card';
-import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { incidentsApi } from '../../lib/api/incidentsApi';
-import { IncidentType, SeverityLevel } from '../../lib/types';
+import { IncidentType } from '../../lib/types';
 
 export const FieldReportForm = ({
   onSubmitSuccess,
@@ -73,7 +68,7 @@ export const FieldReportForm = ({
         }));
         setGpsStatus('GPS fix acquired (±5m)');
       },
-      (err) => {
+      (_err) => {
         // Fallback default NER coordinate
         setFormData((prev) => ({ ...prev, lat: '25.8000', lng: '92.5000' }));
         setGpsStatus('Using regional default GPS (25.80°N, 92.50°E)');

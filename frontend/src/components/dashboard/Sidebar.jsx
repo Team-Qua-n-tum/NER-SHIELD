@@ -8,12 +8,10 @@ import {
   Building2,
   FileText,
   Shield,
-  Layers,
-  ChevronRight,
 } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 
-export const navigationItems = [
+const navigationItems = [
   { id: 'overview', label: 'Command Overview', icon: LayoutDashboard, badge: null },
   { id: 'map', label: 'GIS Operations Map', icon: MapIcon, badge: 'Live GIS' },
   { id: 'alerts', label: 'Alerts & Hazards', icon: AlertTriangle, badge: '4 New', badgeVariant: 'critical' },

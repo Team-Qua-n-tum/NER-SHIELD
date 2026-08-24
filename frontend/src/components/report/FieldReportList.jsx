@@ -3,12 +3,10 @@ import {
   FileText,
   MapPin,
   Camera,
-  CheckCircle2,
   Clock,
   User,
   PlusCircle,
   ArrowUpRight,
-  ShieldAlert,
   Search,
 } from 'lucide-react';
 import { Card } from '../ui/Card';

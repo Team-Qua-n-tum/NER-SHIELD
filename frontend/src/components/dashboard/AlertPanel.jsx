@@ -7,10 +7,7 @@ import {
   CloudRain,
   ClockAlert,
   ShieldAlert,
-  ArrowRight,
   Check,
-  CheckCircle2,
-  Filter,
   MapPin,
   Compass,
 } from 'lucide-react';
@@ -23,7 +20,6 @@ export const AlertPanel = ({
   alerts = [],
   onDismissAlert,
   onLocateAlert,
-  onActionClick,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedSeverity, setSelectedSeverity] = useState('ALL');

@@ -6,8 +6,6 @@ import {
   Clock,
   AlertTriangle,
   PlusCircle,
-  Activity,
-  Layers,
 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
@@ -72,8 +70,12 @@ export const Header = ({
             <div className="cmd-brand-title-row">
               <h1 className="cmd-brand-title">NER-SHIELD</h1>
               <Badge variant="primary" size="sm">SIH26002</Badge>
-              <Badge variant={emergencyMode ? 'critical' : 'success'} size="sm">
-                {emergencyMode ? 'EMERGENCY PROTOCOL ACTIVE' : 'DISASTER LOGISTICS COMMAND'}
+              <Badge variant={emergencyMode ? 'critical' : activeAlertsCount > 0 ? 'critical' : 'success'} size="sm">
+                {emergencyMode
+                  ? 'EMERGENCY PROTOCOL ACTIVE'
+                  : activeAlertsCount > 0
+                  ? `${activeAlertsCount} ACTIVE HAZARDS`
+                  : 'DISASTER LOGISTICS COMMAND'}
               </Badge>
             </div>
             <p className="cmd-brand-subtitle">

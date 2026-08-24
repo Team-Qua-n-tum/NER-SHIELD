@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
 import {
   Building2,
-  AlertTriangle,
-  CheckCircle2,
-  AlertOctagon,
-  Shield,
   Search,
-  Filter,
   ArrowUpRight,
-  Package,
 } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';

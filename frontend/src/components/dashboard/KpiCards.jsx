@@ -7,10 +7,7 @@ import {
   Truck,
   ShieldAlert,
   ClockAlert,
-  TrendingDown,
-  TrendingUp,
 } from 'lucide-react';
-import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 
 export const KpiCards = ({

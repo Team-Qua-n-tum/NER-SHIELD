@@ -3,19 +3,13 @@ import {
   Truck,
   MapPin,
   Clock,
-  Radio,
-  Phone,
-  Thermometer,
-  Fuel,
   Navigation,
   AlertTriangle,
   ArrowRight,
-  Shield,
 } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
-import { StatusIndicator } from '../ui/StatusIndicator';
 import { CommodityMetadata } from '../../lib/types';
 
 export const VehicleStatus = ({

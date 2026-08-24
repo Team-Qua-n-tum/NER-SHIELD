@@ -6,19 +6,14 @@ import {
   CheckCircle2,
   AlertTriangle,
   AlertOctagon,
-  Clock,
-  MapPin,
-  ArrowRight,
   Shield,
-  Zap,
   Sparkles,
-  Layers,
   Send,
 } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
-import { CommodityPriority, CommodityMetadata } from '../../lib/types';
+import { CommodityMetadata } from '../../lib/types';
 import { routesApi } from '../../lib/api/routesApi';
 
 export const RouteRecommendations = ({
