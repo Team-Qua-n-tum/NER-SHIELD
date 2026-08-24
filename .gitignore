@@ -19,6 +19,7 @@ Copy this entire file:
 .env.development.local
 .env.test.local
 .env.production.local
+.hintrc
 
 *.pem
 *.key
