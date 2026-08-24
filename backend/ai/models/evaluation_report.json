@@ -1,0 +1,59 @@
+{
+  "selected_model": "logistic_regression",
+  "dataset": "D:\\SIH\\data\\synthetic\\disruption_dataset.csv",
+  "dataset_rows": 1000,
+  "train_rows": 800,
+  "test_rows": 200,
+  "random_state": 42,
+  "test_size_fraction": 0.2,
+  "feature_columns": [
+    "rainfall_mm",
+    "flood_level",
+    "landslide_indicator",
+    "road_condition",
+    "traffic_level",
+    "historical_incidents",
+    "terrain_risk",
+    "bridge_condition",
+    "incident_severity",
+    "connectivity_score"
+  ],
+  "target_column": "disruption",
+  "model_path": "D:\\SIH\\backend\\ai\\models\\disruption_model.joblib",
+  "all_models": [
+    {
+      "model": "logistic_regression",
+      "accuracy": 0.86,
+      "precision": 0.7377,
+      "recall": 0.7895,
+      "f1_score": 0.7627,
+      "roc_auc": 0.8711
+    },
+    {
+      "model": "random_forest",
+      "accuracy": 0.845,
+      "precision": 0.7321,
+      "recall": 0.7193,
+      "f1_score": 0.7257,
+      "roc_auc": 0.8595
+    },
+    {
+      "model": "gradient_boosting",
+      "accuracy": 0.845,
+      "precision": 0.7826,
+      "recall": 0.6316,
+      "f1_score": 0.699,
+      "roc_auc": 0.87
+    }
+  ],
+  "selected_metrics": {
+    "model": "logistic_regression",
+    "accuracy": 0.86,
+    "precision": 0.7377,
+    "recall": 0.7895,
+    "f1_score": 0.7627,
+    "roc_auc": 0.8711
+  },
+  "data_note": "SYNTHETIC DATA \u2014 all records synthetically generated",
+  "accuracy_note": "All metrics measured on actual 20% stratified hold-out. No fabricated or extrapolated numbers."
+}
