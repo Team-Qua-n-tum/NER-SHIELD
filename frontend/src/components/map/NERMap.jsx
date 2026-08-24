@@ -38,7 +38,7 @@ export const NERMap = ({
   children,
 }) => {
   return (
-    <div className={`relative-map-wrapper ${className}`}>
+    <div className={`relative-map-wrapper ${className}`} style={{ position: "relative" }}>
       <MapContainer
         center={center}
         zoom={zoom}
@@ -46,21 +46,34 @@ export const NERMap = ({
         className="leaflet-map-element"
         style={{ height: "100%", width: "100%" }}
       >
+        {/* Dark CartoDB basemap — shows road network clearly */}
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
+          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         />
 
         {/* Geospatial Layers */}
         <DistrictLayer data={districtData} visible={showDistricts} onDistrictSelect={onDistrictSelect} />
         <RiskLayer data={riskData} visible={showRisks} onRiskSelect={onRiskSelect} />
         <RoadLayer data={roadData} visible={showRoads} onRoadSelect={onRoadSelect} />
-        <RouteLayer data={routeData} visible={showRoutes} selectedRouteId={selectedRouteId} onRouteSelect={onRouteSelect} />
+        <RouteLayer
+          data={routeData}
+          visible={showRoutes}
+          selectedRouteId={selectedRouteId}
+          onRouteSelect={onRouteSelect}
+        />
         <IncidentMarkers data={incidentData} visible={showIncidents} onIncidentSelect={onIncidentSelect} />
         <VehicleMarkers data={vehicleData} visible={showVehicles} onVehicleSelect={onVehicleSelect} />
 
         {children}
       </MapContainer>
+
+      {/* OSRM Attribution Badge */}
+      {showRoutes && (
+        <div className="osrm-notice-badge">
+          🛣️ Routes: Real-road via OSRM / OpenStreetMap
+        </div>
+      )}
     </div>
   );
 };

@@ -1,8 +1,9 @@
 {
   "type": "FeatureCollection",
   "metadata": {
-    "title": "NER Logistics Primary vs Alternate Routes",
+    "title": "NER Logistics Primary vs Alternate Routes — OSRM Routed",
     "status": "PROTOTYPE / SYNTHETIC DATA",
+    "note": "Waypoints are used to fetch real road routes from OSRM (OpenStreetMap-based routing engine).",
     "region": "North Eastern Region (NER), India"
   },
   "features": [
@@ -10,52 +11,47 @@
       "type": "Feature",
       "id": "ROUTE-PRIMARY",
       "properties": {
-        "routeName": "Primary Freight Route: Guwahati -> Imphal (via NH-6)",
+        "routeName": "Primary Freight Route: Guwahati → Imphal (via NH-6 / Shillong Corridor)",
         "routeType": "Primary (Original)",
         "status": "Blocked",
         "distanceKm": 485,
         "estimatedTimeHours": 14.5,
         "riskLevel": "High",
         "color": "#ef4444",
-        "description": "Direct route via Jowai and Haflong. Currently BLOCKED at Dima Hasao due to Landslide."
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [91.75, 26.18],
-          [91.88, 25.57],
-          [92.50, 25.40],
-          [92.85, 25.28],
-          [93.01, 25.18],
-          [93.72, 25.90],
-          [93.93, 24.81]
+        "description": "Direct route via Shillong, Jowai, and Haflong. Currently BLOCKED at Dima Hasao due to Landslide.",
+        "waypoints": [
+          [91.7519, 26.1798],
+          [91.8816, 25.5745],
+          [92.0193, 25.3697],
+          [92.5787, 25.1636],
+          [93.0127, 25.1810],
+          [93.9363, 24.8170]
         ]
-      }
+      },
+      "geometry": null
     },
     {
       "type": "Feature",
       "id": "ROUTE-ALTERNATE",
       "properties": {
-        "routeName": "AI-Recommended Safe Route: Guwahati -> Imphal (via NH-27 North Bypass)",
+        "routeName": "AI-Recommended Safe Route: Guwahati → Imphal (via NH-27 & Dimapur Bypass)",
         "routeType": "Alternate Safe",
         "status": "Clear",
         "distanceKm": 530,
         "estimatedTimeHours": 12.0,
         "riskLevel": "Low",
         "color": "#10b981",
-        "description": "Bypasses landslide hazard zone via Nagaon, Lumding bypass, and Dimapur NH-2 corridor."
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [91.75, 26.18],
-          [92.68, 26.33],
-          [93.18, 25.75],
-          [93.72, 25.90],
-          [94.11, 25.67],
-          [93.93, 24.81]
+        "description": "Bypasses landslide hazard zone via Nagaon, Lumding bypass, and Dimapur NH-2 corridor into Imphal.",
+        "waypoints": [
+          [91.7519, 26.1798],
+          [92.6841, 26.3453],
+          [93.0573, 26.2135],
+          [93.7263, 25.8990],
+          [94.1085, 25.6742],
+          [93.9363, 24.8170]
         ]
-      }
+      },
+      "geometry": null
     }
   ]
 }
