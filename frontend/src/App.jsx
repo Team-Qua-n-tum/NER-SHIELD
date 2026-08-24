@@ -12,6 +12,7 @@ import { VehicleStatus } from './components/dashboard/VehicleStatus';
 import { DistrictConnectivity } from './components/dashboard/DistrictConnectivity';
 import { IncidentSummary } from './components/dashboard/IncidentSummary';
 import { FieldReportForm, FieldReportList } from './components/report';
+import { FloatingChatbot } from './components/chat';
 import { Toast } from './components/ui/Toast';
 
 // API Services & Mock Data
@@ -365,6 +366,20 @@ export function App() {
           />
         </div>
       )}
+
+      {/* Floating AI Logistics Copilot Chatbot */}
+      <FloatingChatbot
+        alerts={alerts}
+        vehicles={vehicles}
+        districts={districts}
+        incidents={incidents}
+        routesData={routesData}
+        onSelectRouteOnMap={handleSelectRouteOnMap}
+        onLocateItem={handleLocateItem}
+        onTabChange={setActiveTab}
+        onToggleEmergency={handleToggleEmergencyMode}
+        onOpenReportModal={() => setIsReportModalOpen(true)}
+      />
     </div>
   );
 }
