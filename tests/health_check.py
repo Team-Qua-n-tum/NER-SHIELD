@@ -17,13 +17,13 @@ def check_frontend() -> bool:
         with urllib.request.urlopen(req, timeout=5) as response:
             code = response.getcode()
             if code == 200:
-                print("✅ Frontend is AVAILABLE.")
+                print("[OK] Frontend is AVAILABLE.")
                 return True
             else:
-                print(f"❌ Frontend returned status code {code}.")
+                print(f"[FAIL] Frontend returned status code {code}.")
                 return False
     except Exception as e:
-        print(f"❌ Frontend is UNAVAILABLE: {e}")
+        print(f"[FAIL] Frontend is UNAVAILABLE: {e}")
         return False
 
 def check_backend() -> bool:
@@ -33,11 +33,11 @@ def check_backend() -> bool:
         with urllib.request.urlopen(health_url, timeout=5) as response:
             code = response.getcode()
             if code != 200:
-                print(f"❌ Backend returned status code {code}.")
+                print(f"[FAIL] Backend returned status code {code}.")
                 return False
             
             data = json.loads(response.read().decode('utf-8'))
-            print("✅ Backend is AVAILABLE.")
+            print("[OK] Backend is AVAILABLE.")
             
             # Check inner services
             ai_ready = data.get("ai_engine_ready", False)
@@ -46,30 +46,30 @@ def check_backend() -> bool:
             
             status = True
             if ai_ready:
-                print("✅ AI Engine is READY.")
+                print("[OK] AI Engine is READY.")
             else:
-                print("❌ AI Engine is NOT READY.")
+                print("[FAIL] AI Engine is NOT READY.")
                 status = False
                 
             if routing_ready:
-                print("✅ Routing Engine is READY.")
+                print("[OK] Routing Engine is READY.")
             else:
-                print("❌ Routing Engine is NOT READY.")
+                print("[FAIL] Routing Engine is NOT READY.")
                 status = False
                 
             if db_connected:
-                print("✅ Database connection is OK.")
+                print("[OK] Database connection is OK.")
             else:
-                print("❌ Database connection FAILED.")
+                print("[FAIL] Database connection FAILED.")
                 status = False
                 
             return status
             
     except urllib.error.URLError as e:
-        print(f"❌ Backend is UNAVAILABLE (URL Error): {e}")
+        print(f"[FAIL] Backend is UNAVAILABLE (URL Error): {e}")
         return False
     except Exception as e:
-        print(f"❌ Backend check encountered an error: {e}")
+        print(f"[FAIL] Backend check encountered an error: {e}")
         return False
 
 if __name__ == "__main__":
@@ -79,8 +79,8 @@ if __name__ == "__main__":
     
     print("============================================")
     if frontend_ok and backend_ok:
-        print("🎉 ALL SYSTEMS FUNCTIONAL.")
+        print("SUCCESS: ALL SYSTEMS FUNCTIONAL.")
         sys.exit(0)
     else:
-        print("⚠️ HEALTH CHECK FAILED. One or more systems are down.")
+        print("WARNING: HEALTH CHECK FAILED. One or more systems are down.")
         sys.exit(1)
