@@ -4,3 +4,7 @@ export { AdminDashboard } from './AdminDashboard';
 export { DriverDashboard } from './DriverDashboard';
 export { LocalOfficerDashboard } from './LocalOfficerDashboard';
 export { SupplyDashboard } from './SupplyDashboard';
+export { MapPage } from './MapPage';
+export { RiskPage } from './RiskPage';
+export { AnalyzerPage } from './AnalyzerPage';
+export { AddIncidentPage } from './AddIncidentPage';

@@ -8,6 +8,10 @@ import {
   DriverDashboard,
   LocalOfficerDashboard,
   SupplyDashboard,
+  MapPage,
+  RiskPage,
+  AnalyzerPage,
+  AddIncidentPage,
 } from './pages';
 import './App.css';
 
@@ -16,17 +20,23 @@ export function App() {
     <AppProvider>
       <Router>
         <Routes>
-          {/* Main Landing Page */}
+          {/* Main Landing & Marketing Page */}
           <Route path="/" element={<Home />} />
 
           {/* Authentication & Role Selection */}
           <Route path="/login" element={<Login />} />
 
-          {/* Role-Based Dashboards */}
+          {/* Role-Based Intelligence Dashboards */}
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/driver" element={<DriverDashboard />} />
           <Route path="/officer" element={<LocalOfficerDashboard />} />
           <Route path="/supply" element={<SupplyDashboard />} />
+
+          {/* Dedicated Core Operational Pages */}
+          <Route path="/map" element={<MapPage />} />
+          <Route path="/risk" element={<RiskPage />} />
+          <Route path="/analyzer" element={<AnalyzerPage />} />
+          <Route path="/incidents" element={<AddIncidentPage />} />
 
           {/* Fallback to Home */}
           <Route path="*" element={<Navigate to="/" replace />} />

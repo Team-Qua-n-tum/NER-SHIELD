@@ -52,10 +52,6 @@ export const SupplyDashboard = () => {
     (v) => v.status.toLowerCase().includes('delayed') || v.status.toLowerCase().includes('caution')
   );
 
-  const highRiskDistricts = districts.filter(
-    (d) => d.status === 'CRITICAL_BOTTLENECK' || d.status === 'ISOLATED' || d.status === 'RESTRICTED'
-  );
-
   const handleLocateVehicle = (veh) => {
     setInspectedItem({
       type: 'Vehicle',
@@ -88,8 +84,8 @@ export const SupplyDashboard = () => {
         unreadAlertsCount={alerts.length}
       />
 
-      {/* Main Workspace */}
-      <div className="flex-1 flex overflow-hidden">
+      {/* Main Workspace with Responsive Sidebar */}
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
         
         {/* Supply Sidebar */}
         <Sidebar
@@ -99,16 +95,16 @@ export const SupplyDashboard = () => {
         />
 
         {/* Dynamic Center Work Area */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 max-w-7xl mx-auto w-full">
+        <main className="flex-1 overflow-y-auto p-3 sm:p-5 lg:p-6 space-y-4 sm:space-y-6 max-w-7xl mx-auto w-full min-w-0">
           
           {/* Top Headline Banner */}
-          <div className="bg-gradient-to-r from-cyan-950/40 via-slate-900 to-slate-900 p-4 sm:p-5 rounded-2xl border border-cyan-500/30 shadow-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-center space-x-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 p-2 flex items-center justify-center text-cyan-400">
-                <Package className="w-6 h-6" />
+          <div className="bg-gradient-to-r from-cyan-950/40 via-slate-900 to-slate-900 p-4 sm:p-5 rounded-2xl border border-cyan-500/30 shadow-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 min-w-0">
+            <div className="flex items-center space-x-3.5 min-w-0">
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 p-2 flex items-center justify-center text-cyan-400 shrink-0">
+                <Package className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <div>
-                <div className="flex items-center space-x-2">
+              <div className="min-w-0">
+                <div className="flex items-center space-x-2 flex-wrap gap-y-1">
                   <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider font-mono">
                     NER Civil Supplies & Freight Directorate
                   </span>
@@ -116,19 +112,19 @@ export const SupplyDashboard = () => {
                     Stockpile Telemetry Live
                   </span>
                 </div>
-                <h1 className="text-lg sm:text-xl font-extrabold text-white mt-0.5">
+                <h1 className="text-base sm:text-xl font-extrabold text-white mt-0.5 truncate">
                   Supply Chain Flow & Freight Resiliency Analytics
                 </h1>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-400 truncate">
                   Tracking critical food grains, cold-chain vaccines, and fuel shipments across all 8 Northeastern states.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 shrink-0">
               <button
                 onClick={() => setActiveTab('delayed')}
-                className="px-3.5 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center space-x-1.5 transition-all"
+                className="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center space-x-1.5 transition-all"
               >
                 <Clock className="w-4 h-4" />
                 <span>{delayedVehicles.length} Delayed Deliveries</span>
@@ -136,7 +132,7 @@ export const SupplyDashboard = () => {
 
               <button
                 onClick={() => setIsChatOpen(true)}
-                className="px-3.5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold flex items-center space-x-1.5 shadow-lg shadow-cyan-500/20 transition-all"
+                className="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold flex items-center space-x-1.5 shadow-lg shadow-cyan-500/20 transition-all"
               >
                 <Radio className="w-4 h-4" />
                 <span>Supply Comms</span>
@@ -145,12 +141,12 @@ export const SupplyDashboard = () => {
           </div>
 
           {/* Supply Chain KPI Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <StatCard
               title="Freight In Transit"
               value={`${totalTonnageInTransit} T`}
-              subvalue={`Across ${vehicles.length} Trucks`}
-              change="94.2% Capacity Utilization"
+              subvalue={`/ ${vehicles.length} Trucks`}
+              change="94.2% Capacity Rate"
               trend="up"
               icon={Package}
               colorScheme="cyan"
@@ -180,9 +176,9 @@ export const SupplyDashboard = () => {
             />
 
             <StatCard
-              title="Medical & Fuel Stockpiles"
+              title="Regional Reserves"
               value="28 Days"
-              subvalue="Regional Buffer"
+              subvalue="Buffer Stock"
               change="Imphal: 8 days medical"
               trend="up"
               icon={Activity}
@@ -193,16 +189,18 @@ export const SupplyDashboard = () => {
 
           {/* TAB 1: FLEET OVERVIEW & VEHICLE TRACKING */}
           {activeTab === 'fleet' && (
-            <div className="space-y-6">
+            <div className="space-y-6 min-w-0">
               
               {/* Full Vehicle Table */}
-              <VehicleTable
-                onLocateVehicle={handleLocateVehicle}
-                onRerouteVehicle={() => setActiveTab('routes')}
-              />
+              <div className="min-w-0 overflow-hidden">
+                <VehicleTable
+                  onLocateVehicle={handleLocateVehicle}
+                  onRerouteVehicle={() => setActiveTab('routes')}
+                />
+              </div>
 
               {/* Commodity In-Transit Breakdown */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
                 <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
                   <div className="flex items-center justify-between text-xs text-slate-400">
                     <span className="font-bold text-white flex items-center gap-1.5">
@@ -248,8 +246,8 @@ export const SupplyDashboard = () => {
 
           {/* TAB 2: DELAYED DELIVERIES TRACKER */}
           {activeTab === 'delayed' && (
-            <div className="space-y-6">
-              <div className="bg-slate-900 rounded-2xl border border-slate-800 p-6 space-y-4 shadow-xl">
+            <div className="space-y-6 min-w-0">
+              <div className="bg-slate-900 rounded-2xl border border-slate-800 p-4 sm:p-6 space-y-4 shadow-xl min-w-0">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                   <div>
                     <h3 className="text-base font-bold text-white flex items-center gap-2">
@@ -261,7 +259,7 @@ export const SupplyDashboard = () => {
                     </p>
                   </div>
                   <span className="text-xs px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 font-mono font-bold">
-                    {delayedVehicles.length} Vehicles Impacted
+                    {delayedVehicles.length} Delayed
                   </span>
                 </div>
 
@@ -269,7 +267,7 @@ export const SupplyDashboard = () => {
                   {delayedVehicles.map((veh) => (
                     <div
                       key={veh.id}
-                      className="p-4 rounded-xl bg-slate-950 border border-amber-500/30 space-y-3"
+                      className="p-4 rounded-xl bg-slate-950 border border-amber-500/30 space-y-3 min-w-0"
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                         <div>
@@ -299,7 +297,7 @@ export const SupplyDashboard = () => {
                             }}
                             className="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold shadow"
                           >
-                            Dispatch AI Bypass
+                            Dispatch Bypass
                           </button>
                         </div>
                       </div>
@@ -327,7 +325,7 @@ export const SupplyDashboard = () => {
 
           {/* TAB 3: HIGH-RISK ROUTES & AI ADVISORIES */}
           {activeTab === 'routes' && (
-            <div className="space-y-6">
+            <div className="space-y-6 min-w-0">
               <RouteRecommendations
                 recommendationData={routesData}
                 onSelectRouteOnMap={handleSelectRouteOnMap}
@@ -339,10 +337,10 @@ export const SupplyDashboard = () => {
 
           {/* TAB 4: STOCKPILES & REGIONAL ANALYTICS */}
           {activeTab === 'analytics' && (
-            <div className="space-y-6">
+            <div className="space-y-6 min-w-0">
               
               {/* Critical Districts Stockpiles Table */}
-              <div className="bg-slate-900 rounded-2xl border border-slate-800 p-6 shadow-xl space-y-4">
+              <div className="bg-slate-900 rounded-2xl border border-slate-800 p-4 sm:p-6 shadow-xl space-y-4 min-w-0">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                   <div>
                     <h3 className="text-base font-bold text-white flex items-center gap-2">
@@ -420,7 +418,7 @@ export const SupplyDashboard = () => {
 
           {/* TAB 5: GIS MAP */}
           {activeTab === 'map' && (
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/90 shadow-2xl overflow-hidden p-2">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/90 shadow-2xl overflow-hidden p-1 sm:p-2 min-w-0">
               <OperationsMap
                 selectedRouteId={selectedRouteId}
                 onSelectRouteId={setSelectedRouteId}
@@ -434,8 +432,8 @@ export const SupplyDashboard = () => {
 
           {/* TAB 6: COMMS PANEL */}
           {activeTab === 'comms' && (
-            <div className="bg-slate-900 rounded-2xl border border-slate-800 p-6 space-y-4">
-              <div className="flex items-center justify-between">
+            <div className="bg-slate-900 rounded-2xl border border-slate-800 p-4 sm:p-6 space-y-4 min-w-0">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
                   <h3 className="text-base font-bold text-white flex items-center gap-2">
                     <Radio className="w-5 h-5 text-cyan-400" />

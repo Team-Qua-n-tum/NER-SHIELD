@@ -69,8 +69,8 @@ export const DriverDashboard = () => {
         unreadAlertsCount={alerts.length}
       />
 
-      {/* Main Container with Sidebar */}
-      <div className="flex-1 flex overflow-hidden">
+      {/* Main Container with Responsive Sidebar */}
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
         
         {/* Driver Sidebar */}
         <Sidebar
@@ -80,16 +80,16 @@ export const DriverDashboard = () => {
         />
 
         {/* Dynamic Center Work Area */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 max-w-7xl mx-auto w-full">
+        <main className="flex-1 overflow-y-auto p-3 sm:p-5 lg:p-6 space-y-4 sm:space-y-6 max-w-7xl mx-auto w-full min-w-0">
           
           {/* Active Trip Header Banner */}
-          <div className="bg-gradient-to-r from-emerald-950/50 via-slate-900 to-slate-900 p-4 sm:p-5 rounded-2xl border border-emerald-500/30 shadow-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-center space-x-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 p-2 flex items-center justify-center text-emerald-400">
-                <Truck className="w-6 h-6" />
+          <div className="bg-gradient-to-r from-emerald-950/50 via-slate-900 to-slate-900 p-4 sm:p-5 rounded-2xl border border-emerald-500/30 shadow-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 min-w-0">
+            <div className="flex items-center space-x-3.5 min-w-0">
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 p-2 flex items-center justify-center text-emerald-400 shrink-0">
+                <Truck className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <div>
-                <div className="flex items-center space-x-2">
+              <div className="min-w-0">
+                <div className="flex items-center space-x-2 flex-wrap gap-y-1">
                   <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider font-mono">
                     Trip Active • {activeVehicle.vehicleNumber}
                   </span>
@@ -97,28 +97,28 @@ export const DriverDashboard = () => {
                     {activeVehicle.status}
                   </span>
                 </div>
-                <h1 className="text-lg sm:text-xl font-extrabold text-white mt-0.5">
+                <h1 className="text-base sm:text-xl font-extrabold text-white mt-0.5 truncate">
                   {activeVehicle.origin} → {activeVehicle.destination}
                 </h1>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-400 truncate">
                   Cargo: <strong className="text-cyan-300">{activeVehicle.cargo}</strong> ({activeVehicle.currentLoadTonnes}T)
                 </p>
               </div>
             </div>
 
             {/* Quick Driver Action Buttons */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 shrink-0">
               <button
                 onClick={() => setIsReportModalOpen(true)}
-                className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black shadow-lg shadow-amber-500/20 flex items-center space-x-1.5 transition-all cursor-pointer"
+                className="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black shadow-lg shadow-amber-500/20 flex items-center space-x-1.5 transition-all cursor-pointer"
               >
                 <FilePlus className="w-4 h-4" />
-                <span>Quick Incident Report</span>
+                <span>Report Road Hazard</span>
               </button>
 
               <button
                 onClick={() => setIsChatOpen(true)}
-                className="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs font-bold flex items-center space-x-1.5 transition-all"
+                className="px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs font-bold flex items-center space-x-1.5 transition-all"
               >
                 <Radio className="w-4 h-4" />
                 <span>Base Dispatch</span>
@@ -127,30 +127,30 @@ export const DriverDashboard = () => {
           </div>
 
           {/* Real-time Trip Telemetry Metrics (4 Cards) */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             
             {/* ETA */}
-            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-1.5">
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-1.5 min-w-0">
               <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
-                <span>ESTIMATED ARRIVAL (ETA)</span>
-                <Clock className="w-4 h-4 text-amber-400" />
+                <span className="truncate">ESTIMATED ETA</span>
+                <Clock className="w-4 h-4 text-amber-400 shrink-0" />
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-white font-mono">
+              <div className="text-xl sm:text-3xl font-black text-white font-mono">
                 {activeVehicle.eta || '4h 15m'}
               </div>
-              <p className="text-[11px] text-emerald-400 flex items-center gap-1 font-medium">
-                <CheckCircle2 className="w-3 h-3" /> On-Schedule Buffer
+              <p className="text-[10px] sm:text-[11px] text-emerald-400 flex items-center gap-1 font-medium truncate">
+                <CheckCircle2 className="w-3 h-3 shrink-0" /> On-Schedule Buffer
               </p>
             </div>
 
             {/* Distance Travelled */}
-            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-1.5">
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-1.5 min-w-0">
               <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
-                <span>DISTANCE TRAVELLED</span>
-                <Navigation className="w-4 h-4 text-blue-400" />
+                <span className="truncate">TRAVELLED</span>
+                <Navigation className="w-4 h-4 text-blue-400 shrink-0" />
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-white font-mono">
-                {activeVehicle.distanceTravelledKm} <span className="text-sm font-normal text-slate-400">km</span>
+              <div className="text-xl sm:text-3xl font-black text-white font-mono">
+                {activeVehicle.distanceTravelledKm} <span className="text-xs font-normal text-slate-400">km</span>
               </div>
               <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
                 <div className="bg-blue-500 h-full rounded-full" style={{ width: `${progressPercent}%` }} />
@@ -158,34 +158,34 @@ export const DriverDashboard = () => {
             </div>
 
             {/* Remaining Distance */}
-            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-1.5">
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-1.5 min-w-0">
               <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
-                <span>REMAINING DISTANCE</span>
-                <Compass className="w-4 h-4 text-cyan-400" />
+                <span className="truncate">REMAINING</span>
+                <Compass className="w-4 h-4 text-cyan-400 shrink-0" />
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-white font-mono">
-                {activeVehicle.remainingDistanceKm} <span className="text-sm font-normal text-slate-400">km</span>
+              <div className="text-xl sm:text-3xl font-black text-white font-mono">
+                {activeVehicle.remainingDistanceKm} <span className="text-xs font-normal text-slate-400">km</span>
               </div>
-              <p className="text-[11px] text-slate-400">
-                Via: <strong className="text-slate-200">{activeVehicle.route || 'NH-27 Safe Corridor'}</strong>
+              <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">
+                Via: <strong className="text-slate-200">{activeVehicle.route || 'NH-27 Corridor'}</strong>
               </p>
             </div>
 
             {/* Telemetry (Speed & Fuel) */}
-            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-1.5">
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-1.5 min-w-0">
               <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
-                <span>CRUISING SPEED & FUEL</span>
-                <Activity className="w-4 h-4 text-emerald-400" />
+                <span className="truncate">SPEED & FUEL</span>
+                <Activity className="w-4 h-4 text-emerald-400 shrink-0" />
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-white font-mono flex items-baseline gap-2">
+              <div className="text-xl sm:text-3xl font-black text-white font-mono flex items-baseline gap-1.5">
                 <span>{activeVehicle.speedKmH} <span className="text-xs font-normal text-slate-400">km/h</span></span>
               </div>
-              <div className="flex items-center justify-between text-[11px] text-slate-400 pt-0.5">
+              <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-slate-400 pt-0.5 truncate">
                 <span className="flex items-center gap-1 text-cyan-300">
-                  <Fuel className="w-3 h-3 text-cyan-400" /> {activeVehicle.fuelPercent}% Fuel
+                  <Fuel className="w-3 h-3 text-cyan-400" /> {activeVehicle.fuelPercent}%
                 </span>
                 <span className="flex items-center gap-1 text-emerald-300">
-                  <Battery className="w-3 h-3 text-emerald-400" /> {activeVehicle.batteryPercent}% Telemetry
+                  <Battery className="w-3 h-3 text-emerald-400" /> {activeVehicle.batteryPercent}%
                 </span>
               </div>
             </div>
@@ -193,18 +193,18 @@ export const DriverDashboard = () => {
           </div>
 
           {/* Main Grid: Reused GIS Map + Driver In-Cabin Console */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 min-w-0">
             
             {/* 2 Cols: Reused Live Route Map */}
-            <div className="lg:col-span-2 space-y-4">
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/90 shadow-xl overflow-hidden">
-                <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+            <div className="lg:col-span-2 space-y-4 min-w-0">
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/90 shadow-xl overflow-hidden min-w-0 p-1 sm:p-2">
+                <div className="p-3 sm:p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
                   <div className="flex items-center space-x-2">
                     <MapPin className="w-4 h-4 text-cyan-400" />
                     <h3 className="text-sm font-bold text-white">Live Route Navigation & GIS Hazards</h3>
                   </div>
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/40 font-mono">
-                    GPS TRACKING: LIVE
+                  <span className="text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/40 font-mono">
+                    GPS: ACTIVE
                   </span>
                 </div>
 
@@ -223,10 +223,10 @@ export const DriverDashboard = () => {
               <div className="p-4 rounded-2xl bg-slate-900 border border-amber-500/30 text-xs space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-amber-400 flex items-center gap-1.5">
-                    <AlertTriangle className="w-4 h-4" />
+                    <AlertTriangle className="w-4 h-4 shrink-0" />
                     Advisory: NH-6 Dima Hasao Blockage Alert
                   </span>
-                  <span className="text-[10px] text-slate-400 font-mono">BRO Alert Active</span>
+                  <span className="text-[10px] text-slate-400 font-mono">BRO Alert</span>
                 </div>
                 <p className="text-slate-300 leading-relaxed">
                   NH-6 at Km 142 is blocked due to 180m landslide debris. Your route has been automatically switched to the <strong>NH-27 Nagaon-Lumding Safe Corridor</strong> to bypass the bottleneck safely.
@@ -235,17 +235,17 @@ export const DriverDashboard = () => {
             </div>
 
             {/* 1 Col: Vehicle Status, Cold Chain & Live Dispatch */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6 min-w-0">
               
               {/* Vehicle Health & Cold-Chain Status Card */}
-              <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl space-y-4">
+              <div className="p-4 sm:p-5 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl space-y-4 min-w-0">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                   <h3 className="text-sm font-bold text-white flex items-center gap-2">
                     <Activity className="w-4 h-4 text-emerald-400" />
                     In-Cabin Diagnostics
                   </h3>
                   <span className="text-[10px] text-emerald-400 font-bold px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
-                    ALL SYSTEMS OK
+                    OK (98%)
                   </span>
                 </div>
 
@@ -280,13 +280,13 @@ export const DriverDashboard = () => {
                   <div className="flex items-center justify-between py-1.5 border-b border-slate-800/80">
                     <span className="text-slate-400">Route Weather Conditions</span>
                     <span className="font-semibold text-amber-300 flex items-center gap-1">
-                      <CloudRain className="w-3.5 h-3.5" /> Light Rain / Wet Surface
+                      <CloudRain className="w-3.5 h-3.5" /> Wet Surface / Fog
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between py-1.5">
                     <span className="text-slate-400">Assigned Field Officer</span>
-                    <span className="font-semibold text-cyan-300">Inspector Debajit Barman</span>
+                    <span className="font-semibold text-cyan-300 truncate ml-1">Insp. Debajit Barman</span>
                   </div>
                 </div>
 
@@ -302,14 +302,14 @@ export const DriverDashboard = () => {
               </div>
 
               {/* Emergency SOS & Direct Call Hotline */}
-              <div className="p-4 rounded-2xl bg-red-950/30 border border-red-500/30 space-y-3">
+              <div className="p-4 rounded-2xl bg-red-950/30 border border-red-500/30 space-y-3 min-w-0">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-red-400 flex items-center gap-1.5">
                     <ShieldAlert className="w-4 h-4" /> Emergency Assistance SOS
                   </span>
                   <span className="text-[10px] text-red-300 font-mono">24/7 EOC</span>
                 </div>
-                <p className="text-[11px] text-slate-300">
+                <p className="text-[11px] text-slate-300 leading-relaxed">
                   Immediate breakdown or landslide entrapment on hill highway? Trigger emergency location beacon to SDRF & Patrol units.
                 </p>
                 <div className="flex gap-2">
@@ -338,8 +338,8 @@ export const DriverDashboard = () => {
 
       {/* Field Report Modal */}
       {isReportModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-slate-900 border border-slate-700 shadow-2xl p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-sm">
+          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-slate-900 border border-slate-700 shadow-2xl p-4 sm:p-6">
             <FieldReportForm
               onSubmitSuccess={handleFieldReportSubmitSuccess}
               onCancel={() => setIsReportModalOpen(false)}
