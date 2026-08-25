@@ -1,5 +1,9 @@
+from datetime import datetime
+
 from backend.ai.risk.model import ai_risk_model
+from backend.app.core.config import settings
 from backend.app.schemas.risk import RiskPredictionRequest, RiskPredictionResponse
+
 
 class AIService:
     @staticmethod
@@ -10,8 +14,13 @@ class AIService:
             weather_condition=request.weather_condition,
             soil_type=request.soil_type,
             historical_landslides_count=request.historical_landslides_count,
-            active_incidents_count=request.active_incidents_count
+            active_incidents_count=request.active_incidents_count,
         )
-        return RiskPredictionResponse(**result)
+        return RiskPredictionResponse(
+            **result,
+            model_version=settings.MODEL_VERSION,
+            calculated_at=datetime.utcnow(),
+        )
+
 
 ai_service = AIService()

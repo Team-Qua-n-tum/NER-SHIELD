@@ -56,6 +56,36 @@ It monitors road accessibility, weather conditions, incidents, vehicle movement,
 * Docker
 * OpenStreetMap
 
+## Documentation
+
+For deep-dives into the architecture, deployment, and APIs, refer to our detailed documentation:
+
+* [Architecture](docs/architecture.md)
+* [Database Schema](docs/database.md)
+* [API Reference](docs/api-reference.md)
+* [Deployment Guide](docs/deployment.md)
+* [Demo Workflow](docs/demo-workflow.md)
+
+## Quick Start (Demo Mode)
+
+The platform is designed to be easily testable without a complex PostGIS setup using `DEMO_MODE=true`.
+
+1. **Backend**:
+
+   ```bash
+   cd backend
+   pip install -r requirements.txt
+   uvicorn app.main:app --reload
+   ```
+
+2. **Frontend**:
+
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+
 ## Workflow
 
 ```text

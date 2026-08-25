@@ -89,6 +89,26 @@ class LogisticsService:
     def get_incident(incident_id: str) -> Optional[IncidentResponse]:
         return db_store.incidents.get(incident_id)
 
+    @staticmethod
+    def update_incident_status(incident_id: str, update: IncidentStatusUpdate) -> Optional[IncidentResponse]:
+        with db_store._lock:
+            incident = db_store.incidents.get(incident_id)
+            if not incident:
+                return None
+            inc_dict = incident.dict()
+            inc_dict["status"] = update.status
+            if update.status == "RESOLVED":
+                inc_dict["resolved_at"] = datetime.utcnow()
+                # Decrement district active incident count
+                dist = db_store.districts.get(inc_dict.get("district_id", ""))
+                if dist:
+                    d_dict = dist.dict()
+                    d_dict["active_incidents_count"] = max(0, d_dict["active_incidents_count"] - 1)
+                    db_store.districts[inc_dict["district_id"]] = DistrictResponse(**d_dict)
+            updated = IncidentResponse(**inc_dict)
+            db_store.incidents[incident_id] = updated
+            return updated
+
     # Vehicles
     @staticmethod
     def get_all_vehicles() -> VehicleListResponse:
