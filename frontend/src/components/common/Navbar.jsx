@@ -78,38 +78,35 @@ export const Navbar = ({ onToggleNotifications, onToggleChat, unreadAlertsCount 
   const currentTheme = getRoleTheme(currentRole);
   const RoleIcon = currentTheme.icon;
 
-  const mainPages = [
+  const navLinks = [
     { path: '/', label: 'Home', icon: HomeIcon },
-    { path: '/admin', label: 'Admin', icon: Shield, badge: 'Role' },
-    { path: '/driver', label: 'Driver', icon: Truck, badge: 'Role' },
-    { path: '/officer', label: 'Officer', icon: MapPin, badge: 'Role' },
-    { path: '/supply', label: 'Supply', icon: Package, badge: 'Role' },
+    { path: '/admin', label: 'Admin', icon: Shield },
+    { path: '/driver', label: 'Driver', icon: Truck },
+    { path: '/officer', label: 'Officer', icon: MapPin },
+    { path: '/supply', label: 'Supply', icon: Package },
     { path: '/map', label: 'GIS Map', icon: Map },
     { path: '/risk', label: 'Hazards', icon: AlertTriangle, count: alerts.length },
     { path: '/analyzer', label: 'AI Analyzer', icon: Compass },
-    { path: '/incidents', label: 'Incident Log', icon: FileText },
-    { path: '/login', label: 'Role Login', icon: User },
+    { path: '/incidents', label: 'Incidents', icon: FileText },
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-slate-900/95 backdrop-blur-md border-b border-slate-800 text-slate-100 shadow-xl">
-      
-      {/* Tier 1: Main Brand & Global Controls */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14 sm:h-16 gap-2">
+    <header className="sticky top-0 z-50 w-full bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80 text-slate-100 shadow-xl">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 gap-3">
           
-          {/* Brand & Platform Identity */}
-          <div className="flex items-center space-x-2.5 sm:space-x-3 shrink-0">
-            {/* Mobile Hamburger Toggle */}
+          {/* Brand Logo & Name */}
+          <div className="flex items-center space-x-3 shrink-0">
+            {/* Mobile Hamburger Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white focus:outline-none border border-slate-700"
+              className="lg:hidden p-2 rounded-xl bg-slate-900 text-slate-300 hover:text-white focus:outline-none border border-slate-800 transition-colors"
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
 
-            <Link to="/" className="flex items-center space-x-2.5 group">
+            <Link to="/" className="flex items-center space-x-3 group">
               <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 p-0.5 shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform duration-200 flex items-center justify-center shrink-0">
                 <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
                   <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400 group-hover:text-cyan-300 transition-colors" />
@@ -126,9 +123,9 @@ export const Navbar = ({ onToggleNotifications, onToggleChat, unreadAlertsCount 
             </Link>
           </div>
 
-          {/* Desktop Central Fast Page Tabs (Always visible on large & medium screens) */}
-          <nav className="hidden lg:flex items-center space-x-1 overflow-x-auto py-1 px-2 scrollbar-none">
-            {mainPages.slice(0, 7).map((item) => {
+          {/* Desktop Clean Navigation Links with Generous Gap */}
+          <nav className="hidden lg:flex items-center space-x-1.5 xl:space-x-2">
+            {navLinks.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
 
@@ -136,13 +133,13 @@ export const Navbar = ({ onToggleNotifications, onToggleChat, unreadAlertsCount 
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 ${
+                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-150 ${
                     isActive
-                      ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20 border border-blue-400/40'
-                      : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/80 border border-transparent'
+                      ? 'bg-blue-600/30 text-cyan-300 border border-blue-500/50 shadow-sm shadow-blue-500/10'
+                      : 'text-slate-400 hover:text-slate-100 hover:bg-slate-900 border border-transparent'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-cyan-400' : 'text-slate-400'}`} />
                   <span>{item.label}</span>
                   {item.count && item.count > 0 && (
                     <span className="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-red-500 text-white">
@@ -154,11 +151,11 @@ export const Navbar = ({ onToggleNotifications, onToggleChat, unreadAlertsCount 
             })}
           </nav>
 
-          {/* Right Action Controls */}
-          <div className="flex items-center space-x-1.5 sm:space-x-2.5 shrink-0">
+          {/* Right Action Controls with Proper Spacing */}
+          <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
             
             {/* Live SAT Pulse (Desktop) */}
-            <div className="hidden xl:flex items-center space-x-2 px-2.5 py-1 rounded-full bg-slate-950 border border-slate-800 text-[10px] text-slate-300">
+            <div className="hidden xl:flex items-center space-x-2 px-3 py-1.5 rounded-full bg-slate-900/90 border border-slate-800 text-[10px] text-slate-300">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -170,10 +167,10 @@ export const Navbar = ({ onToggleNotifications, onToggleChat, unreadAlertsCount 
             <button
               onClick={toggleEmergencyMode}
               title="Toggle Level-1 Logistics Emergency Protocol"
-              className={`flex items-center space-x-1 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-sm ${
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-sm ${
                 emergencyMode
                   ? 'bg-red-600 text-white border-red-500 shadow-red-500/30 animate-pulse'
-                  : 'bg-slate-800 hover:bg-red-950/40 text-red-400 border-red-900/40 hover:border-red-600/50'
+                  : 'bg-slate-900 hover:bg-red-950/40 text-red-400 border-red-900/40 hover:border-red-600/50'
               }`}
             >
               <ShieldAlert className="w-3.5 h-3.5" />
@@ -185,7 +182,7 @@ export const Navbar = ({ onToggleNotifications, onToggleChat, unreadAlertsCount 
             {/* Notification Trigger */}
             <button
               onClick={onToggleNotifications}
-              className="relative p-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors border border-slate-700/70"
+              className="relative p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors border border-slate-800"
               title="Hazard & Disaster Feed"
             >
               <Bell className="w-4 h-4" />
@@ -199,7 +196,7 @@ export const Navbar = ({ onToggleNotifications, onToggleChat, unreadAlertsCount 
             {/* Chat Trigger */}
             <button
               onClick={onToggleChat}
-              className="relative p-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-cyan-400 hover:text-cyan-300 transition-colors border border-slate-700/70"
+              className="relative p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-400 hover:text-cyan-300 transition-colors border border-slate-800"
               title="Emergency Radio & AI Copilot"
             >
               <MessageSquare className="w-4 h-4" />
@@ -213,7 +210,7 @@ export const Navbar = ({ onToggleNotifications, onToggleChat, unreadAlertsCount 
                   setRoleDropdownOpen(!roleDropdownOpen);
                   setProfileDropdownOpen(false);
                 }}
-                className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-all ${currentTheme.bg}`}
+                className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all ${currentTheme.bg}`}
               >
                 <RoleIcon className="w-3.5 h-3.5 shrink-0" />
                 <span className="hidden md:inline">{currentTheme.label}</span>
@@ -221,7 +218,7 @@ export const Navbar = ({ onToggleNotifications, onToggleChat, unreadAlertsCount 
               </button>
 
               {roleDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-slate-900 border border-slate-700 shadow-2xl py-1 z-50 animate-in fade-in zoom-in-95 duration-100">
+                <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-slate-900 border border-slate-700 shadow-2xl py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
                   <div className="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800">
                     Switch Active Workspace
                   </div>
@@ -329,50 +326,16 @@ export const Navbar = ({ onToggleNotifications, onToggleChat, unreadAlertsCount 
         </div>
       </div>
 
-      {/* Tier 2: Dedicated Horizontal Multi-Page Navigation Bar (Always visible) */}
-      <div className="w-full bg-slate-950/90 border-t border-slate-800/80 px-3 sm:px-6 lg:px-8 py-1.5 overflow-x-auto scrollbar-thin">
-        <div className="max-w-7xl mx-auto flex items-center space-x-1.5 min-w-max">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mr-1 flex items-center gap-1">
-            <Layers className="w-3 h-3 text-cyan-400" /> Pages:
-          </span>
-
-          {mainPages.map((item) => {
-            const Icon = item.icon;
-            const isActive = location.pathname === item.path;
-
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-150 ${
-                  isActive
-                    ? 'bg-blue-600 text-white font-bold shadow-sm shadow-blue-500/20'
-                    : 'bg-slate-900/80 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800'
-                }`}
-              >
-                <Icon className={`w-3 h-3 ${isActive ? 'text-white' : 'text-slate-400'}`} />
-                <span>{item.label}</span>
-                {item.count && item.count > 0 && (
-                  <span className="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-red-500 text-white">
-                    {item.count}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Mobile Full-Screen Navigation Drawer */}
+      {/* Mobile Full-Screen Navigation Drawer with Clean Spacing */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-slate-950/98 border-b border-slate-800 p-4 space-y-4 animate-in slide-in-from-top-2 duration-150">
+        <div className="lg:hidden bg-slate-950 border-b border-slate-800 p-4 space-y-4 animate-in slide-in-from-top-2 duration-150">
           <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-1 flex items-center justify-between">
             <span>Direct Page Navigation</span>
-            <span className="text-cyan-400 text-[10px]">10 Active Routes</span>
+            <span className="text-cyan-400 text-[10px] font-mono">9 Active Routes</span>
           </div>
           
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            {mainPages.map((item) => {
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
+            {navLinks.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
 
@@ -383,18 +346,18 @@ export const Navbar = ({ onToggleNotifications, onToggleChat, unreadAlertsCount 
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center space-x-2 p-3 rounded-xl font-semibold transition-all ${
                     isActive
-                      ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                      : 'bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800'
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20 border border-blue-400/40'
+                      : 'bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-cyan-400'}`} />
+                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-cyan-400'}`} />
                   <span className="truncate">{item.label}</span>
                 </Link>
               );
             })}
           </div>
 
-          <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-xs">
+          <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
             <span className="text-slate-400">Current Role: <strong className="text-white">{currentTheme.label}</strong></span>
             <Link
               to="/login"
