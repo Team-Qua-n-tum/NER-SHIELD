@@ -1,1 +1,1 @@
-# backend.app.api package
+"""backend/app/api package."""

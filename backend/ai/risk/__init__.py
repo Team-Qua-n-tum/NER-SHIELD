@@ -1,1 +1,1 @@
-# backend.ai.risk package
+"""backend/ai/risk package."""
