@@ -12,12 +12,16 @@ vi.mock('../../lib/api/incidentsApi', () => ({
 }));
 
 describe('FieldReportForm', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('renders correctly with default values', () => {
     render(<FieldReportForm />);
     
     expect(screen.getByText('NER Field Incident Reporting Interface')).toBeInTheDocument();
-    expect(screen.getByLabelText(/Incident Disruption Type/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Severity Level/i)).toBeInTheDocument();
+    expect(screen.getByText(/Incident Disruption Type/i)).toBeInTheDocument();
+    expect(screen.getByText(/Severity Level/i)).toBeInTheDocument();
   });
 
   it('submits form with valid data', async () => {

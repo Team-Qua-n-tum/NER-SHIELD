@@ -166,7 +166,7 @@ export const FieldReportForm = ({
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="field-report-form">
+      <form onSubmit={handleSubmit} className="field-report-form" noValidate>
         {/* Row 1: Incident Type & Severity */}
         <div className="form-row form-grid-2">
           <div className="form-field">
