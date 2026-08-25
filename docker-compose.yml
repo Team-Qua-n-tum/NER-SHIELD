@@ -1,102 +1,29 @@
+version: '3.8'
+
 services:
-
-  # ==========================================================
-  # PostgreSQL + PostGIS
-  # ==========================================================
-
-  postgres:
-    image: postgis/postgis:16-3.4
-
-    container_name: nershield-postgres
-
-    restart: unless-stopped
-
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-nershield}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-
-    ports:
-      - "5432:5432"
-
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-nershield}"
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-
-  # ==========================================================
-  # FastAPI Backend
-  # ==========================================================
-
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-
-    container_name: nershield-backend
-
-    restart: unless-stopped
-
-    environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-nershield}
-
-      API_HOST: 0.0.0.0
-      API_PORT: 8000
-
-      DEMO_MODE: ${DEMO_MODE:-true}
-
+      network: host
     ports:
       - "8000:8000"
+    environment:
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - DEMO_MODE=true
+    restart: always
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      network: host
+      args:
+        - VITE_API_URL=http://localhost:8000/api/v1
+    ports:
+      - "80:80"
+      - "5173:80"
+    restart: always
     depends_on:
-      postgres:
-        condition: service_healthy
-
-    volumes:
-      - ./backend:/app
-
-
-  # ==========================================================
-  # Optional Frontend Container
-  # ==========================================================
-  #
-  # During active development, run the frontend directly:
-  #
-  # cd frontend
-  # npm run dev
-  #
-  # Enable this service later when the frontend Dockerfile
-  # is stable.
-  # ==========================================================
-
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #
-  #   container_name: nershield-frontend
-  #
-  #   restart: unless-stopped
-  #
-  #   environment:
-  #     NEXT_PUBLIC_API_URL: http://localhost:8000
-  #
-  #   ports:
-  #     - "3000:3000"
-  #
-  #   depends_on:
-  #     - backend
-
-
-volumes:
-
-  postgres_data:
+      - backend
