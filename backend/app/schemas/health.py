@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
 
+
 class HealthResponse(BaseModel):
     status: str = Field("ok", description="Service status indicator")
     service: str = Field("NER-SHIELD API", description="Service name")
@@ -9,3 +10,4 @@ class HealthResponse(BaseModel):
     database_connected: bool = Field(True, description="Database connection status flag")
     ai_engine_ready: bool = Field(True, description="AI disruption risk engine status")
     routing_engine_ready: bool = Field(True, description="GIS routing engine status")
+    demo_mode: bool = Field(True, description="True when running with synthetic demo data")
