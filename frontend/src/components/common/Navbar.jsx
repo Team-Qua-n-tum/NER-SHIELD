@@ -78,7 +78,7 @@ export const Navbar = ({ onToggleNotifications, onToggleChat, unreadAlertsCount 
   const currentTheme = getRoleTheme(currentRole);
   const RoleIcon = currentTheme.icon;
 
-  const navLinks = [
+  const mainPages = [
     { path: '/', label: 'Home', icon: HomeIcon },
     { path: '/admin', label: 'Admin', icon: Shield, badge: 'Role' },
     { path: '/driver', label: 'Driver', icon: Truck, badge: 'Role' },
@@ -88,19 +88,22 @@ export const Navbar = ({ onToggleNotifications, onToggleChat, unreadAlertsCount 
     { path: '/risk', label: 'Hazards', icon: AlertTriangle, count: alerts.length },
     { path: '/analyzer', label: 'AI Analyzer', icon: Compass },
     { path: '/incidents', label: 'Incident Log', icon: FileText },
+    { path: '/login', label: 'Role Login', icon: User },
   ];
 
   return (
     <header className="sticky top-0 z-40 w-full bg-slate-900/95 backdrop-blur-md border-b border-slate-800 text-slate-100 shadow-xl">
+      
+      {/* Tier 1: Main Brand & Global Controls */}
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-2">
+        <div className="flex items-center justify-between h-14 sm:h-16 gap-2">
           
           {/* Brand & Platform Identity */}
           <div className="flex items-center space-x-2.5 sm:space-x-3 shrink-0">
             {/* Mobile Hamburger Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white focus:outline-none border border-slate-700"
+              className="lg:hidden p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white focus:outline-none border border-slate-700"
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -123,9 +126,9 @@ export const Navbar = ({ onToggleNotifications, onToggleChat, unreadAlertsCount 
             </Link>
           </div>
 
-          {/* Desktop Central Navigation Links */}
-          <nav className="hidden xl:flex items-center space-x-1 overflow-x-auto py-1">
-            {navLinks.map((item) => {
+          {/* Desktop Central Fast Page Tabs (Always visible on large & medium screens) */}
+          <nav className="hidden lg:flex items-center space-x-1 overflow-x-auto py-1 px-2 scrollbar-none">
+            {mainPages.slice(0, 7).map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
 
@@ -135,11 +138,11 @@ export const Navbar = ({ onToggleNotifications, onToggleChat, unreadAlertsCount 
                   to={item.path}
                   className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 ${
                     isActive
-                      ? 'bg-blue-600/25 text-cyan-300 border border-blue-500/40 shadow-sm shadow-blue-500/10'
-                      : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/70 border border-transparent'
+                      ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20 border border-blue-400/40'
+                      : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/80 border border-transparent'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-cyan-400' : 'text-slate-400'}`} />
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-slate-400'}`} />
                   <span>{item.label}</span>
                   {item.count && item.count > 0 && (
                     <span className="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-red-500 text-white">
@@ -155,7 +158,7 @@ export const Navbar = ({ onToggleNotifications, onToggleChat, unreadAlertsCount 
           <div className="flex items-center space-x-1.5 sm:space-x-2.5 shrink-0">
             
             {/* Live SAT Pulse (Desktop) */}
-            <div className="hidden lg:flex items-center space-x-2 px-2.5 py-1 rounded-full bg-slate-950 border border-slate-800 text-[10px] text-slate-300">
+            <div className="hidden xl:flex items-center space-x-2 px-2.5 py-1 rounded-full bg-slate-950 border border-slate-800 text-[10px] text-slate-300">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -326,15 +329,50 @@ export const Navbar = ({ onToggleNotifications, onToggleChat, unreadAlertsCount 
         </div>
       </div>
 
+      {/* Tier 2: Dedicated Horizontal Multi-Page Navigation Bar (Always visible) */}
+      <div className="w-full bg-slate-950/90 border-t border-slate-800/80 px-3 sm:px-6 lg:px-8 py-1.5 overflow-x-auto scrollbar-thin">
+        <div className="max-w-7xl mx-auto flex items-center space-x-1.5 min-w-max">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mr-1 flex items-center gap-1">
+            <Layers className="w-3 h-3 text-cyan-400" /> Pages:
+          </span>
+
+          {mainPages.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-150 ${
+                  isActive
+                    ? 'bg-blue-600 text-white font-bold shadow-sm shadow-blue-500/20'
+                    : 'bg-slate-900/80 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800'
+                }`}
+              >
+                <Icon className={`w-3 h-3 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                <span>{item.label}</span>
+                {item.count && item.count > 0 && (
+                  <span className="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-red-500 text-white">
+                    {item.count}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Mobile Full-Screen Navigation Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-slate-950/95 border-b border-slate-800 p-4 space-y-4 animate-in slide-in-from-top-2 duration-150">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-1">
-            Platform Navigation & Pages
+        <div className="lg:hidden bg-slate-950/98 border-b border-slate-800 p-4 space-y-4 animate-in slide-in-from-top-2 duration-150">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-1 flex items-center justify-between">
+            <span>Direct Page Navigation</span>
+            <span className="text-cyan-400 text-[10px]">10 Active Routes</span>
           </div>
           
           <div className="grid grid-cols-2 gap-2 text-xs">
-            {navLinks.map((item) => {
+            {mainPages.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
 
@@ -343,13 +381,13 @@ export const Navbar = ({ onToggleNotifications, onToggleChat, unreadAlertsCount 
                   key={item.path}
                   to={item.path}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center space-x-2 p-3 rounded-xl font-medium transition-all ${
+                  className={`flex items-center space-x-2 p-3 rounded-xl font-semibold transition-all ${
                     isActive
-                      ? 'bg-blue-600/30 text-cyan-300 border border-blue-500/50'
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
                       : 'bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-cyan-400' : 'text-slate-400'}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-cyan-400'}`} />
                   <span className="truncate">{item.label}</span>
                 </Link>
               );
