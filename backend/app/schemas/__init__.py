@@ -9,6 +9,13 @@ from backend.app.schemas.risk import RiskPredictionRequest, RiskPredictionRespon
 from backend.app.schemas.road import GeoPoint, RoadBase, RoadListResponse, RoadResponse, RoadStatusUpdate
 from backend.app.schemas.route import RouteConstraints, RouteOption, RoutePoint, RouteRequest, RouteResponse
 from backend.app.schemas.vehicle import VehicleCreate, VehicleListResponse, VehicleLocationUpdate, VehicleResponse
+from backend.app.schemas.notifications import (
+    DeviceListResponse,
+    DeviceRegistrationRequest,
+    DeviceRegistrationResponse,
+    NotificationSendRequest,
+    NotificationSendResponse,
+)
 
 __all__ = [
     "HealthResponse",
@@ -41,4 +48,9 @@ __all__ = [
     "AlertListResponse",
     "CorridorSummary",
     "DashboardSummaryResponse",
+    "DeviceRegistrationRequest",
+    "DeviceRegistrationResponse",
+    "DeviceListResponse",
+    "NotificationSendRequest",
+    "NotificationSendResponse",
 ]
