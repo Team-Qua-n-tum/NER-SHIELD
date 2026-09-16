@@ -80,6 +80,12 @@ class Settings(BaseSettings):
     ROUTING_API_KEY: Optional[str] = None
 
     # ------------------------------------------------------------------ #
+    # Firebase Cloud Messaging
+    # ------------------------------------------------------------------ #
+    FIREBASE_CREDENTIALS_FILE: Optional[str] = None
+    FIREBASE_CREDENTIALS_JSON: Optional[str] = None
+
+    # ------------------------------------------------------------------ #
     # AI / ML models
     # ------------------------------------------------------------------ #
     MODEL_PATH: Optional[str] = None
