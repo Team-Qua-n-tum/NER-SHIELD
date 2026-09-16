@@ -135,12 +135,11 @@ class Settings(BaseSettings):
         """In production mode (DEMO_MODE=false), critical settings must be present."""
         if not self.DEMO_MODE:
             if not self.DATABASE_URL:
-                # Attempt to construct from parts
-                constructed = (
-                    f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
-                    f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
-                )
-                object.__setattr__(self, "DATABASE_URL", constructed)
+                raise ValueError("DATABASE_URL is required when DEMO_MODE=false")
+            if not self.WEATHER_API_URL:
+                raise ValueError("WEATHER_API_URL is required when DEMO_MODE=false")
+            if not self.ROUTING_API_URL:
+                raise ValueError("ROUTING_API_URL is required when DEMO_MODE=false")
             logger.info(
                 "[NER-SHIELD] Production mode: database=%s:%s/%s",
                 self.POSTGRES_HOST,

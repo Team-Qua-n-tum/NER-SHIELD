@@ -8,11 +8,13 @@ from backend.app.api.v1.endpoints import (
     risk,
     routes,
     alerts,
-    dashboard
+    dashboard,
+    operational,
 )
 
 api_router = APIRouter()
 
+api_router.include_router(operational.router)
 api_router.include_router(health.router)
 api_router.include_router(districts.router, tags=["Districts"])
 api_router.include_router(roads.router, tags=["Roads"])

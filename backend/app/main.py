@@ -4,7 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.app.core.config import settings
 from backend.app.api.v1.api import api_router
 from backend.app.schemas.health import HealthResponse
-from datetime import datetime
+from backend.app.services.operational_service import operational_service
+from datetime import datetime, timezone
 
 logging.basicConfig(
     level=logging.INFO,
@@ -46,15 +47,23 @@ async def _startup() -> None:
 # Root level health endpoint for convenience (no prefix collision)
 @app.get("/health", response_model=HealthResponse, tags=["Health"])
 def root_health():
+    system = operational_service.system_status()
     return HealthResponse(
-        status="ok",
+        status=system.status,
         service=settings.PROJECT_NAME,
         version=settings.VERSION,
-        timestamp=datetime.utcnow(),
-        database_connected=True,
+        timestamp=datetime.now(timezone.utc),
+        database_connected=system.database_status in {"connected", "not_required"},
         ai_engine_ready=True,
         routing_engine_ready=True,
         demo_mode=settings.DEMO_MODE,
+        app_version=system.app_version,
+        environment=system.environment,
+        data_mode=system.data_mode,
+        database_status=system.database_status,
+        weather_provider_status=system.weather_provider_status,
+        routing_provider_status=system.routing_provider_status,
+        last_refresh_at=system.last_refresh_at,
     )
 
 
