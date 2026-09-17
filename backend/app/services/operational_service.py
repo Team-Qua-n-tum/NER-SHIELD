@@ -28,19 +28,17 @@ def _age(timestamp: Optional[datetime]) -> Optional[float]:
     return max(0.0, (utc_now() - timestamp).total_seconds())
 
 
+from backend.geospatial.coordinate_utils import parse_bbox as geo_parse_bbox
+from backend.geospatial.geojson_utils import to_geojson_feature_collection
+
+
 def parse_bbox(value: Optional[str]) -> Optional[Tuple[float, float, float, float]]:
     if value is None:
         return None
     try:
-        parts = [float(part.strip()) for part in value.split(",")]
+        return geo_parse_bbox(value)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail="bbox must be minLon,minLat,maxLon,maxLat") from exc
-    if len(parts) != 4:
-        raise HTTPException(status_code=422, detail="bbox must be minLon,minLat,maxLon,maxLat")
-    min_lon, min_lat, max_lon, max_lat = parts
-    if not (-180 <= min_lon < max_lon <= 180 and -90 <= min_lat < max_lat <= 90):
-        raise HTTPException(status_code=422, detail="bbox coordinates are invalid or out of order")
-    return min_lon, min_lat, max_lon, max_lat
 
 
 def _point_in_bbox(lat: float, lon: float, bbox: Optional[Tuple[float, float, float, float]]) -> bool:
@@ -120,10 +118,12 @@ class OperationalService:
                 filtered.append(data)
         now = utc_now()
         legacy_key = name
+        geojson_data = to_geojson_feature_collection(filtered, item_type=name)
         return OperationalListResponse(
             total=len(filtered), items=filtered, **{legacy_key: filtered},
             source="mock" if settings.DEMO_MODE else "database",
             fetched_at=now, data_mode=self.data_mode, freshness_seconds=0.0, stale=False,
+            geojson=geojson_data,
         )
 
     def roads(self, bbox: Optional[str]) -> OperationalListResponse:
