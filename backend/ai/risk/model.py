@@ -42,7 +42,11 @@ class NERDisruptionRiskModel:
             "HEAVY_RAIN": 0.9,
             "THUNDERSTORM": 0.95
         }
-        norm_weather = weather_factors.get(weather_condition.upper(), 0.3)
+        # If extreme rainfall is supplied without explicit weather override, adjust weather factor accordingly
+        if weather_condition.upper() == "CLEAR" and rainfall_mm >= 100.0:
+            norm_weather = weather_factors["HEAVY_RAIN"]
+        else:
+            norm_weather = weather_factors.get(weather_condition.upper(), 0.3)
         
         # 4. Soil stability factor
         soil_factors = {
