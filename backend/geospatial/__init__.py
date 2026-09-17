@@ -1,7 +1,115 @@
-"""
+﻿"""
 backend/geospatial/__init__.py
 Geospatial utilities for NER-SHIELD.
 
 Provides pure-Python spatial helpers that do NOT require PostGIS or GDAL
 for their core logic, enabling use in demo mode and in tests.
 """
+
+from .coordinate_utils import (
+    EARTH_RADIUS_KM,
+    EARTH_RADIUS_METERS,
+    assert_wgs84,
+    bearing_degrees,
+    haversine_distance,
+    haversine_distance_meters,
+    is_within_ner,
+    midpoint,
+    parse_bbox,
+    validate_bbox,
+    validate_ner_bounds,
+    validate_wgs84,
+)
+from .geojson_utils import (
+    coords_to_geojson_point,
+    geojson_point_to_latlon,
+    hazard_to_geojson,
+    incident_to_geojson,
+    path_to_geojson_linestring,
+    road_to_geojson,
+    to_geojson_feature,
+    to_geojson_feature_collection,
+    validate_coordinate_ranges,
+    validate_geojson,
+    vehicle_to_geojson,
+)
+from .hazard_buffer import (
+    BoundingBox,
+    create_buffer_km,
+    create_hazard_polygon,
+    identify_affected_roads,
+    incidents_in_buffer,
+    roads_in_buffer,
+)
+from .postgis_repository import PostGISSpatialRepository
+from .road_matching import (
+    RoadProximityResult,
+    associate_incident_road,
+    find_nearest_road,
+    roads_sorted_by_proximity,
+)
+from .spatial_queries import (
+    active_incidents,
+    filter_by_risk,
+    filter_by_since,
+    filter_by_status,
+    hazards_in_bounds,
+    high_risk_roads,
+    incidents_by_district,
+    incidents_in_bounds,
+    incidents_within_radius,
+    roads_by_status,
+    roads_in_bounds,
+    vehicles_in_bounds,
+    vehicles_near_incident,
+)
+
+__all__ = [
+    "EARTH_RADIUS_KM",
+    "EARTH_RADIUS_METERS",
+    "validate_wgs84",
+    "assert_wgs84",
+    "validate_ner_bounds",
+    "is_within_ner",
+    "validate_bbox",
+    "parse_bbox",
+    "haversine_distance",
+    "haversine_distance_meters",
+    "bearing_degrees",
+    "midpoint",
+    "validate_geojson",
+    "coords_to_geojson_point",
+    "path_to_geojson_linestring",
+    "geojson_point_to_latlon",
+    "validate_coordinate_ranges",
+    "road_to_geojson",
+    "incident_to_geojson",
+    "vehicle_to_geojson",
+    "hazard_to_geojson",
+    "to_geojson_feature",
+    "to_geojson_feature_collection",
+    "BoundingBox",
+    "create_buffer_km",
+    "create_hazard_polygon",
+    "identify_affected_roads",
+    "roads_in_buffer",
+    "incidents_in_buffer",
+    "find_nearest_road",
+    "associate_incident_road",
+    "roads_sorted_by_proximity",
+    "RoadProximityResult",
+    "roads_in_bounds",
+    "incidents_in_bounds",
+    "vehicles_in_bounds",
+    "hazards_in_bounds",
+    "filter_by_since",
+    "filter_by_status",
+    "filter_by_risk",
+    "roads_by_status",
+    "high_risk_roads",
+    "incidents_within_radius",
+    "incidents_by_district",
+    "active_incidents",
+    "vehicles_near_incident",
+    "PostGISSpatialRepository",
+]

@@ -32,6 +32,7 @@ class OperationalListResponse(BaseModel):
     data_mode: str
     freshness_seconds: Optional[float] = None
     stale: bool = False
+    geojson: Optional[Dict[str, Any]] = None
 
 
 class WeatherForecastResponse(BaseModel):
