@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -11,6 +11,8 @@ import { RouteLayer } from "./RouteLayer";
 
 const DEFAULT_NER_CENTER = [25.8, 92.5];
 const DEFAULT_NER_ZOOM = 7;
+const OSM_TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+const OSM_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 export const NERMap = ({
   center = DEFAULT_NER_CENTER,
@@ -37,6 +39,23 @@ export const NERMap = ({
   className = "gis-map-container",
   children,
 }) => {
+  let tileUrl = import.meta.env.VITE_MAP_TILE_URL;
+  let attribution = import.meta.env.VITE_MAP_ATTRIBUTION || OSM_ATTRIBUTION;
+  const apiKey = import.meta.env.VITE_MAP_API_KEY;
+
+  if (!tileUrl) {
+    tileUrl = OSM_TILE_URL;
+    attribution = OSM_ATTRIBUTION;
+  } else if (tileUrl.includes("apiKey") || tileUrl.includes("accessToken") || tileUrl.includes("API_KEY") || tileUrl.includes("api_key")) {
+    if (!apiKey) {
+      console.warn("Commercial map provider key is missing. Falling back to OpenStreetMap.");
+      tileUrl = OSM_TILE_URL;
+      attribution = OSM_ATTRIBUTION;
+    } else {
+      tileUrl = tileUrl.replace(/\{(apiKey|accessToken|API_KEY|api_key)\}/gi, apiKey);
+    }
+  }
+
   return (
     <div className={`relative-map-wrapper ${className}`} style={{ position: "relative" }}>
       <MapContainer
@@ -46,10 +65,9 @@ export const NERMap = ({
         className="leaflet-map-element"
         style={{ height: "100%", width: "100%" }}
       >
-        {/* CartoDB Voyager — clean Google Maps–style basemap with road names, labels & highways */}
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          attribution={attribution}
+          url={tileUrl}
           maxZoom={20}
         />
 
