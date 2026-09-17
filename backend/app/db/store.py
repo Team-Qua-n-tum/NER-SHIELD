@@ -19,6 +19,7 @@ class DataStore:
         self.incidents: Dict[str, IncidentResponse] = {}
         self.vehicles: Dict[str, VehicleResponse] = {}
         self.alerts: Dict[str, AlertResponse] = {}
+        self.notification_devices: Dict[str, dict] = {}
         self._seed_data()
 
     def _seed_data(self):

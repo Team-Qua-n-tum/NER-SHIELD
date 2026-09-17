@@ -1,6 +1,6 @@
 {
   "selected_model": "logistic_regression",
-  "dataset": "D:\\SIH\\data\\synthetic\\disruption_dataset.csv",
+  "dataset": "D:\\E\\ner-shield\\data\\synthetic\\disruption_dataset.csv",
   "dataset_rows": 1000,
   "train_rows": 800,
   "test_rows": 200,
@@ -19,7 +19,7 @@
     "connectivity_score"
   ],
   "target_column": "disruption",
-  "model_path": "D:\\SIH\\backend\\ai\\models\\disruption_model.joblib",
+  "model_path": "D:\\E\\ner-shield\\backend\\ai\\models\\disruption_model.joblib",
   "all_models": [
     {
       "model": "logistic_regression",

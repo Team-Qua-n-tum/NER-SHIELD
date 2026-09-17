@@ -18,6 +18,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from backend.app.core.config import settings
 from backend.app.models.base import Base
+from backend.app.models.notification import NotificationDevice  # noqa: F401
 
 logger = logging.getLogger(__name__)
 
