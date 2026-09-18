@@ -178,7 +178,6 @@ class Edge:
     prediction_horizon_minutes: Optional[int] = None
 
     # Provenance / freshness
-    source: Optional[str] = None
     freshness_seconds: Optional[float] = None
     stale: bool = False
     data_mode: Optional[str] = None
@@ -283,7 +282,6 @@ class Edge:
             "eta_multiplier": self.eta_multiplier,
             "edge_cost_multiplier": self.edge_cost_multiplier,
             "prediction_confidence": self.prediction_confidence,
-            "source": self.source,
             "freshness_seconds": self.freshness_seconds,
             "stale": self.stale,
             "data_mode": self.data_mode,

@@ -101,18 +101,26 @@ def _enrich_edge_from_ai(edge: Edge, road_id: str, district_id: Optional[str], l
         edge.suggested_status = risk_data.get("suggested_status") or edge.suggested_status
         edge.incident_ids = list(risk_data.get("affected_by_incident_ids") or [])
         edge.stale = bool(risk_data.get("stale", False))
-        edge.data_mode = risk_data.get("data_mode")
-        edge.source = risk_data.get("source_status") or edge.source
+        edge.data_mode = risk_data.get("data_mode") or edge.data_mode
+        # Do NOT overwrite edge.source — that field is the topology from-node id.
+        # Provenance lives on network.source_status / edge.data_mode.
         edge.freshness_seconds = risk_data.get("input_freshness_seconds")
         if edge.risk_score is not None:
             edge.disruption_risk = float(edge.risk_score)
 
         # GIS suggested_risk_penalty is already preferred inside AI risk_penalty
         # when present; mark supplement only if AI omitted and GIS had a value.
-        # Assembler puts suggested_risk_penalty into risk_penalty — avoid double count.
+        # Assembler folds suggested_risk_penalty into risk_penalty — avoid double count.
         edge.gis_penalty_applied = False
-        if edge.risk_penalty is None and risk_data.get("suggested_status"):
+        gis_penalty = risk_data.get("suggested_risk_penalty")
+        if gis_penalty is not None:
+            edge.suggested_risk_penalty = float(gis_penalty)
+        if edge.risk_penalty is None and (
+            edge.suggested_risk_penalty is not None or risk_data.get("suggested_status")
+        ):
             edge.gis_penalty_applied = True
+            if edge.suggested_risk_penalty is None and risk_data.get("risk_penalty") is not None:
+                edge.suggested_risk_penalty = float(risk_data["risk_penalty"])
     except Exception as exc:
         logger.debug("risk enrichment failed for %s: %s", road_id, exc)
 
@@ -245,7 +253,6 @@ def build_network_from_store(
             risk_score=risk,
             risk_level=r.get("risk_level"),
             data_mode=network.data_mode,
-            source=network.source_status,
         )
 
         if enrich_ai:

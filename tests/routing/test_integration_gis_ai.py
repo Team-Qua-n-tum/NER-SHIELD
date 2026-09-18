@@ -274,6 +274,58 @@ class TestGraphAndSafety:
         trav2, _ = evaluate_edge_eligibility(edge2)
         assert trav2 is True
 
+    def test_gis_suggested_status_blocked_excludes(self):
+        edge = Edge(
+            id="E1",
+            source="A",
+            target="B",
+            distance_km=10.0,
+            speed_limit_kmh=40.0,
+            disruption_risk=0.2,
+            suggested_status="blocked",
+        )
+        trav, reasons = evaluate_edge_eligibility(edge)
+        assert trav is False
+        assert any("suggested_status=blocked" in r for r in reasons)
+
+    def test_predicted_speed_zero_with_confidence_excludes(self):
+        edge = Edge(
+            id="E1",
+            source="A",
+            target="B",
+            distance_km=10.0,
+            speed_limit_kmh=40.0,
+            disruption_risk=0.2,
+            predicted_speed_kmh=0.0,
+            prediction_confidence=0.9,
+        )
+        trav, reasons = evaluate_edge_eligibility(edge)
+        assert trav is False
+        assert any("predicted_speed_kmh" in r for r in reasons)
+
+        # Low confidence must not invent a hard closure
+        edge2 = Edge(
+            id="E2",
+            source="A",
+            target="B",
+            distance_km=10.0,
+            speed_limit_kmh=40.0,
+            disruption_risk=0.2,
+            predicted_speed_kmh=0.0,
+            prediction_confidence=0.1,
+        )
+        trav2, _ = evaluate_edge_eligibility(edge2)
+        assert trav2 is True
+
+    def test_ai_enrichment_preserves_topology_source(self):
+        """Regression: provenance must never overwrite Edge.source node id."""
+        network = build_network_from_store(enrich_ai=True)
+        assert network.graph_status == "ready"
+        edge = network.edges["road-nh27-gt"]
+        assert edge.source == "dist-guwahati"
+        assert edge.target == "dist-tezpur"
+        assert edge.source.startswith("dist-")
+
 
 # ---------------------------------------------------------------------------
 # Cost
@@ -431,8 +483,11 @@ class TestRerouteShowcase:
             "dist-guwahati", "dist-itanagar", engine_mode="advanced", force_rebuild=True
         )
         assert before["status"] == "success"
-        selected_before = before["recommended_route"]
+        assert before["routing_engine"] == "advanced"
+        selected_before = before["selected_route"] or before["recommended_route"]
         roads_before = list(selected_before["road_ids"])
+        eta_before = float(selected_before["eta_hours"])
+        risk_before = float(selected_before["risk_score"])
         assert roads_before
         # Prefer shorter Tezpur corridor when both open
         assert "road-nh27-gt" in roads_before or "road-nh27-ti" in roads_before or "road-ah1-gi" in roads_before
@@ -442,7 +497,7 @@ class TestRerouteShowcase:
         if before.get("alternatives"):
             assert before["alternatives"][0]["road_ids"] != roads_before
 
-        # Close a road on the selected path
+        # Close a road on the selected path (critical landslide / full closure)
         target_road = None
         for rid in roads_before:
             if rid in ("road-nh27-gt", "road-nh27-ti"):
@@ -452,10 +507,13 @@ class TestRerouteShowcase:
             target_road = roads_before[0]
 
         original = db_store.roads[target_road]
-        simulate_road_closure(
+        original_incident = db_store.incidents.get(f"inc-showcase-{target_road}")
+        closure = simulate_road_closure(
             target_road,
             title="Critical landslide on preferred corridor",
         )
+        assert closure["road_id"] == target_road
+        assert target_road in closure["affected_road_ids"]
 
         after = plan_with_engine_selection(
             "dist-guwahati", "dist-itanagar", engine_mode="advanced", force_rebuild=True
@@ -463,23 +521,42 @@ class TestRerouteShowcase:
 
         # Restore seed road for other tests
         db_store.roads[target_road] = original
-        if f"inc-showcase-{target_road}" in db_store.incidents:
-            del db_store.incidents[f"inc-showcase-{target_road}"]
+        inc_key = f"inc-showcase-{target_road}"
+        if original_incident is None:
+            db_store.incidents.pop(inc_key, None)
+        else:
+            db_store.incidents[inc_key] = original_incident
         invalidate_network_cache("showcase_restore")
 
         if after["status"] == "no_route":
             assert after["reason_code"] == "all_connecting_roads_blocked"
+            assert after["selected_route"] is None
+            assert after["routes"] == []
+            assert after["alternatives"] == []
+            assert after.get("data_mode") == "demo"
             return
 
         assert after["status"] == "success"
-        roads_after = after["recommended_route"]["road_ids"]
+        selected_after = after["selected_route"] or after["recommended_route"]
+        roads_after = selected_after["road_ids"]
+        eta_after = float(selected_after["eta_hours"])
+        risk_after = float(selected_after["risk_score"])
+
         assert target_road not in roads_after
         for alt in after.get("alternatives") or []:
             assert target_road not in alt["road_ids"]
         assert roads_after != roads_before
-        assert after["recommended_route"].get("reasoning") or after.get("reasoning")
+        assert eta_after > 0
+        assert risk_after >= 0
+        # Materially different corridor after excluding the landslide road
+        assert set(roads_after) != set(roads_before)
+        reasoning = selected_after.get("reasoning") or after.get("reasoning") or ""
+        assert reasoning
         assert after.get("data_mode") == "demo"
         assert after.get("stale") in (True, False)
+        # Keep metrics for showcase reporting (ETA/risk may rise on longer bypass)
+        assert eta_before > 0 and eta_after > 0
+        assert risk_before >= 0 and risk_after >= 0
 
     def test_all_paths_blocked_no_route(self):
         network = _tiny_dual_network()
@@ -490,6 +567,38 @@ class TestRerouteShowcase:
         resp = svc.plan_route(RouteRequest(source_id="A", destination_id="C"))
         assert resp.recommended is None
         assert "no viable route" in resp.reason.lower()
+
+    def test_engine_selector_no_route_contract(self, monkeypatch):
+        """Structured no_route payload when every connecting corridor is closed."""
+        from backend.app.db.store import db_store
+
+        invalidate_network_cache("no_route_start")
+        blocked_ids = ["road-nh27-gt", "road-nh27-ti", "road-ah1-gi"]
+        originals = {rid: db_store.roads[rid] for rid in blocked_ids if rid in db_store.roads}
+        try:
+            for rid in originals:
+                simulate_road_closure(rid, title=f"Full closure {rid}")
+            result = plan_with_engine_selection(
+                "dist-guwahati",
+                "dist-itanagar",
+                engine_mode="advanced",
+                force_rebuild=True,
+            )
+            assert result["status"] == "no_route"
+            assert result["message"] == "No safe route is currently available."
+            assert result["reason_code"] == "all_connecting_roads_blocked"
+            assert result["selected_route"] is None
+            assert result["routes"] == []
+            assert result["alternatives"] == []
+            assert result.get("data_mode") == "demo"
+            assert result.get("stale") is False or result.get("stale") in (True, False)
+            # No fabricated geometry/path
+            assert result.get("recommended_route") is None
+        finally:
+            for rid, road in originals.items():
+                db_store.roads[rid] = road
+                db_store.incidents.pop(f"inc-showcase-{rid}", None)
+            invalidate_network_cache("no_route_restore")
 
     def test_cache_invalidation(self):
         invalidate_network_cache("manual")

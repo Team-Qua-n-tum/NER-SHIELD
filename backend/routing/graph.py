@@ -44,12 +44,12 @@ def _clone_edge_attrs(edge: Edge, **overrides: Any) -> Dict[str, Any]:
         "edge_cost_multiplier": edge.edge_cost_multiplier,
         "prediction_confidence": edge.prediction_confidence,
         "prediction_horizon_minutes": edge.prediction_horizon_minutes,
-        "source": edge.source,
         "freshness_seconds": edge.freshness_seconds,
         "stale": edge.stale,
         "data_mode": edge.data_mode,
         "traversable": edge.traversable,
         "exclusion_reasons": list(edge.exclusion_reasons or []),
+        "name": edge.name,
     }
     fields.update(overrides)
     return fields
