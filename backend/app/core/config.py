@@ -78,6 +78,8 @@ class Settings(BaseSettings):
     # ------------------------------------------------------------------ #
     ROUTING_API_URL: Optional[str] = None
     ROUTING_API_KEY: Optional[str] = None
+    # Internal engine selector: auto | advanced | simple
+    ROUTING_ENGINE: str = "auto"
 
     # ------------------------------------------------------------------ #
     # Firebase Cloud Messaging

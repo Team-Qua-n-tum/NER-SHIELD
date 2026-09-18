@@ -354,6 +354,26 @@ class DataStore:
                     {"lat": 23.8315, "lng": 91.2868}
                 ],
                 "last_checked": datetime.utcnow().isoformat()
+            },
+            # Dual-corridor showcase: Guwahati ↔ Itanagar alternate (longer)
+            {
+                "id": "road-ah1-gi",
+                "code": "AH-1 / NH-15 Alt",
+                "name": "Guwahati - Itanagar Alternate Corridor",
+                "start_district": "dist-guwahati",
+                "end_district": "dist-itanagar",
+                "length_km": 420.0,
+                "status": "OPEN",
+                "disruption_cause": None,
+                "risk_score": 0.22,
+                "risk_level": "LOW",
+                "path_coordinates": [
+                    {"lat": 26.1445, "lng": 91.7362},
+                    {"lat": 26.5000, "lng": 92.5000},
+                    {"lat": 26.9000, "lng": 93.2000},
+                    {"lat": 27.0844, "lng": 93.6053}
+                ],
+                "last_checked": datetime.utcnow().isoformat()
             }
         ]
         for r in raw_roads:
