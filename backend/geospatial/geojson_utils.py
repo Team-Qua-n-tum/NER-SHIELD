@@ -1,4 +1,4 @@
-﻿"""
+"""
 geojson_utils.py — GeoJSON validation, conversion, and construction helpers.
 
 All coordinates in GeoJSON use SRID 4326 (WGS-84) with [longitude, latitude] ordering.

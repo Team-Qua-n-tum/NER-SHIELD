@@ -1,4 +1,4 @@
-﻿"""
+"""
 road_matching.py — Incident-to-road proximity and deterministic association utilities.
 
 Supports both segment-level Haversine distance calculations and backward-compatible

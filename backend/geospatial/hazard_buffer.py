@@ -1,4 +1,4 @@
-﻿"""
+"""
 hazard_buffer.py — Hazard impact buffers, affected roads calculation, and risk zone modeling.
 
 Provides incident-to-infrastructure impact assessments for routing cost penalties

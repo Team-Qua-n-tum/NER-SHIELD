@@ -1,4 +1,4 @@
-﻿"""
+"""
 postgis_repository.py — PostGIS spatial query interface and SQL expressions.
 
 Provides safe, standardized helper constructs for PostgreSQL / PostGIS spatial queries:

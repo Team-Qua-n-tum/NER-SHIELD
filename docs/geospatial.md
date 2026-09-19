@@ -1,4 +1,4 @@
-﻿# GIS & Geospatial Layer Upgrade
+# GIS & Geospatial Layer Upgrade
 
 ## Overview
 This document details the GIS & Geospatial Layer Upgrade for NER-SHIELD, focusing on the live-data oriented backend foundations while preserving backward compatibility with `DEMO_MODE`.

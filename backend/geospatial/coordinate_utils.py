@@ -1,4 +1,4 @@
-﻿"""
+"""
 coordinate_utils.py — WGS-84 coordinate validation and distance calculation.
 
 All coordinates in NER-SHIELD use SRID 4326 (WGS-84 geographic CRS).

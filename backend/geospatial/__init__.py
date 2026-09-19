@@ -1,4 +1,4 @@
-﻿"""
+"""
 backend/geospatial/__init__.py
 Geospatial utilities for NER-SHIELD.
 

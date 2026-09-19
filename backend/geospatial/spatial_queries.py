@@ -1,4 +1,4 @@
-﻿"""
+"""
 spatial_queries.py — Viewport-based spatial queries and operational dataset filters.
 
 Operates deterministically over in-memory Python structures (from DataStore)

@@ -1,4 +1,4 @@
-﻿"""
+"""
 tests/geospatial/test_geospatial.py
 Comprehensive GIS unit tests for NER-SHIELD geospatial layer.
 """
