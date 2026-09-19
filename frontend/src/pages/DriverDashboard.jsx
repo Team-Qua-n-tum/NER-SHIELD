@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { RoleRoute } from '../components/auth/RoleRoute';
 import { useApp } from '../context/AppContext';
 import { Navbar, Sidebar, StatCard, NotificationPanel, ChatPanel } from '../components/common';
 import { OperationsMap } from '../components/dashboard/OperationsMap';
@@ -377,4 +378,12 @@ export const DriverDashboard = () => {
   );
 };
 
-export default DriverDashboard;
+// ⚠️  SECURITY: field_officer role guard is UI-layer only.
+//     Backend must enforce access control on all API endpoints.
+const ProtectedDriverDashboard = () => (
+  <RoleRoute allowedRoles={['field_officer', 'admin']}>
+    <DriverDashboard />
+  </RoleRoute>
+);
+
+export default ProtectedDriverDashboard;

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { RoleRoute } from '../components/auth/RoleRoute';
 import { useApp } from '../context/AppContext';
 import { Navbar, Sidebar, StatCard, NotificationPanel, ChatPanel } from '../components/common';
 import { RouteRecommendations } from '../components/dashboard/RouteRecommendations';
@@ -232,4 +233,9 @@ export const AnalyzerPage = () => {
   );
 };
 
-export default AnalyzerPage;
+const ProtectedAnalyzerPage = () => (
+  <RoleRoute allowedRoles={['admin', 'district_officer', 'logistics_operator']}>
+    <AnalyzerPage />
+  </RoleRoute>
+);
+export default ProtectedAnalyzerPage;

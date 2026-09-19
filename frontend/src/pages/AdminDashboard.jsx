@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { RoleRoute } from '../components/auth/RoleRoute';
+import { DataModeBadge } from '../components/auth/DataModeBadge';
+import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
 import { Navbar, Sidebar, StatCard, VehicleTable, NotificationPanel, ChatPanel } from '../components/common';
 import { OperationsMap } from '../components/dashboard/OperationsMap';
@@ -43,6 +46,7 @@ export const AdminDashboard = () => {
     closeToast,
     showToast
   } = useApp();
+  const { dataMode } = useAuth();
 
   const [activeTab, setActiveTab] = useState('overview'); // overview, map, vehicles, alerts, routes, incidents, districts, comms
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -424,4 +428,12 @@ export const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+// Wrap with RoleRoute guard — admin only.
+// ⚠️  SECURITY: Backend must enforce admin-only access on all admin API endpoints.
+const ProtectedAdminDashboard = () => (
+  <RoleRoute allowedRoles={['admin']}>
+    <AdminDashboard />
+  </RoleRoute>
+);
+
+export default ProtectedAdminDashboard;

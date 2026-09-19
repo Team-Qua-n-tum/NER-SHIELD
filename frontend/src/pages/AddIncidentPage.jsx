@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { RoleRoute } from '../components/auth/RoleRoute';
 import { useApp } from '../context/AppContext';
 import { Navbar, Sidebar, StatCard, NotificationPanel, ChatPanel } from '../components/common';
 import { IncidentSummary } from '../components/dashboard/IncidentSummary';
@@ -205,4 +206,9 @@ export const AddIncidentPage = () => {
   );
 };
 
-export default AddIncidentPage;
+const ProtectedAddIncidentPage = () => (
+  <RoleRoute allowedRoles={['admin', 'district_officer', 'field_officer']}>
+    <AddIncidentPage />
+  </RoleRoute>
+);
+export default ProtectedAddIncidentPage;

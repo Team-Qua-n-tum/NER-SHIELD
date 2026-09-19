@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { RoleRoute } from '../components/auth/RoleRoute';
 import { useApp } from '../context/AppContext';
 import { Navbar, Sidebar, StatCard, VehicleTable, NotificationPanel, ChatPanel } from '../components/common';
 import { RouteRecommendations } from '../components/dashboard/RouteRecommendations';
@@ -492,4 +493,12 @@ export const SupplyDashboard = () => {
   );
 };
 
-export default SupplyDashboard;
+// ⚠️  SECURITY: logistics_operator role guard is UI-layer only.
+//     Backend must enforce access control on all API endpoints.
+const ProtectedSupplyDashboard = () => (
+  <RoleRoute allowedRoles={['logistics_operator', 'admin']}>
+    <SupplyDashboard />
+  </RoleRoute>
+);
+
+export default ProtectedSupplyDashboard;

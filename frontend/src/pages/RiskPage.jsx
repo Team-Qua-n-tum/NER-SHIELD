@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { RoleRoute } from '../components/auth/RoleRoute';
 import { useApp } from '../context/AppContext';
 import { Navbar, Sidebar, StatCard, NotificationPanel, ChatPanel } from '../components/common';
 import { AlertPanel } from '../components/dashboard/AlertPanel';
@@ -243,4 +244,9 @@ export const RiskPage = () => {
   );
 };
 
-export default RiskPage;
+const ProtectedRiskPage = () => (
+  <RoleRoute allowedRoles={['admin', 'district_officer', 'logistics_operator']}>
+    <RiskPage />
+  </RoleRoute>
+);
+export default ProtectedRiskPage;
