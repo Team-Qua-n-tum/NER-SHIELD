@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { RoleRoute } from '../components/auth/RoleRoute';
 import { useApp } from '../context/AppContext';
 import { Navbar, Sidebar, StatCard, NotificationPanel, ChatPanel } from '../components/common';
 import { IncidentSummary } from '../components/dashboard/IncidentSummary';
@@ -509,4 +510,12 @@ export const LocalOfficerDashboard = () => {
   );
 };
 
-export default LocalOfficerDashboard;
+// ⚠️  SECURITY: district_officer role guard is UI-layer only.
+//     Backend must enforce access control on all API endpoints.
+const ProtectedLocalOfficerDashboard = () => (
+  <RoleRoute allowedRoles={['district_officer', 'admin']}>
+    <LocalOfficerDashboard />
+  </RoleRoute>
+);
+
+export default ProtectedLocalOfficerDashboard;

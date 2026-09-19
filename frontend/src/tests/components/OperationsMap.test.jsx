@@ -1,7 +1,36 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import OperationsMap from '../../components/dashboard/OperationsMap';
+import { AuthProvider } from '../../context/AuthContext';
+import { AppProvider } from '../../context/AppContext';
+
+// Mock firebase to avoid side effects in tests
+vi.mock('../../lib/firebase', () => ({
+  requestNotificationPermission: vi.fn(),
+  subscribeToForegroundMessages: vi.fn(() => () => {}),
+  firebaseApp: null,
+}));
+
+// Mock authApi
+vi.mock('../../lib/api/authApi', () => ({
+  default: { login: vi.fn(), logout: vi.fn().mockResolvedValue({}), me: vi.fn().mockResolvedValue(null) },
+  authApi: { login: vi.fn(), logout: vi.fn().mockResolvedValue({}), me: vi.fn().mockResolvedValue(null) },
+}));
+
+function Wrapper({ children }) {
+  return (
+    <MemoryRouter>
+      <AuthProvider>
+        <AppProvider>
+          {children}
+        </AppProvider>
+      </AuthProvider>
+    </MemoryRouter>
+  );
+}
+
 
 // Mock NERMap since Leaflet doesn't work well in JSDOM without canvas mock
 vi.mock('../../components/map', () => ({
@@ -15,7 +44,7 @@ vi.mock('../../components/map', () => ({
 
 describe('OperationsMap', () => {
   it('renders all map controls and toggles', () => {
-    render(<OperationsMap />);
+    render(<Wrapper><OperationsMap /></Wrapper>);
     
     expect(screen.getByText('NER GIS Operational Geospatial Surface')).toBeInTheDocument();
     
@@ -29,7 +58,7 @@ describe('OperationsMap', () => {
   });
 
   it('toggles map layers', () => {
-    render(<OperationsMap />);
+    render(<Wrapper><OperationsMap /></Wrapper>);
     
     // Initially true
     expect(screen.getByTestId('ner-map-mock')).toHaveTextContent('Districts: Yes');
@@ -45,7 +74,7 @@ describe('OperationsMap', () => {
       data: { name: 'NH-27', status: 'OPEN' },
     };
     
-    render(<OperationsMap inspectedItem={inspectedItem} />);
+    render(<Wrapper><OperationsMap inspectedItem={inspectedItem} /></Wrapper>);
     
     expect(screen.getByText('Inspector: Road Corridor')).toBeInTheDocument();
     expect(screen.getByText('name')).toBeInTheDocument();
@@ -56,7 +85,7 @@ describe('OperationsMap', () => {
     const mockOnClear = vi.fn();
     const inspectedItem = { type: 'Test', data: { id: 1 } };
     
-    render(<OperationsMap inspectedItem={inspectedItem} onClearInspection={mockOnClear} />);
+    render(<Wrapper><OperationsMap inspectedItem={inspectedItem} onClearInspection={mockOnClear} /></Wrapper>);
     
     const closeBtn = screen.getByLabelText('Close Inspector');
     fireEvent.click(closeBtn);
@@ -66,7 +95,7 @@ describe('OperationsMap', () => {
 
   it('calls onSelectRouteId when route pill is clicked', () => {
     const mockOnSelect = vi.fn();
-    render(<OperationsMap onSelectRouteId={mockOnSelect} />);
+    render(<Wrapper><OperationsMap onSelectRouteId={mockOnSelect} /></Wrapper>);
     
     fireEvent.click(screen.getByText('🔴 Primary (Blocked)'));
     expect(mockOnSelect).toHaveBeenCalledWith('ROUTE-PRIMARY');

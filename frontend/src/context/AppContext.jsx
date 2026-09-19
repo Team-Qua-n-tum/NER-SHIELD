@@ -1,82 +1,41 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+/**
+ * NER-SHIELD AppContext
+ *
+ * Manages operational data: vehicles, incidents, alerts, districts, routes, messages.
+ * Auth state (user, role, login/logout) is now in AuthContext.
+ *
+ * Backward-compat shims: currentUser, currentRole, setRole, logout are proxied
+ * from AuthContext so existing dashboard pages continue to work unchanged.
+ */
+import React, { createContext, useContext, useState, useCallback } from 'react';
 import { vehiclesData as initialVehicles } from '../data/vehicles';
 import { driversData as initialDrivers } from '../data/drivers';
 import { officersData as initialOfficers } from '../data/officers';
 import { incidentsData as initialIncidents } from '../data/incidents';
 import { districtsData as initialDistricts } from '../data/districts';
 import { mockAlerts, mockRouteRecommendations } from '../lib/mockData';
+import { useAuth } from './AuthContext';
 
 const AppContext = createContext(null);
 
 export const AppProvider = ({ children }) => {
-  // Auth & Role State (stored in localStorage)
-  const [currentRole, setCurrentRole] = useState(() => {
-    return localStorage.getItem('ner_shield_role') || 'admin';
-  });
-
-  const [currentUser, setCurrentUser] = useState(() => {
-    const savedRole = localStorage.getItem('ner_shield_role') || 'admin';
-    return getUserForRole(savedRole);
-  });
-
-  function getUserForRole(role) {
-    switch (role) {
-      case 'driver':
-        return {
-          id: 'DRV-101',
-          name: 'Ramesh Kumar',
-          role: 'driver',
-          roleLabel: 'Freight Convoy Captain',
-          assignedVehicleId: 'VEH-101',
-          vehicleNumber: 'AS-01-GC-4482',
-          badge: 'Verified Driver',
-          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
-        };
-      case 'officer':
-        return {
-          id: 'L-OFF-201',
-          name: 'Inspector Debajit Barman',
-          role: 'officer',
-          roleLabel: 'District Disaster Management Officer',
-          district: 'Kamrup Metropolitan & Dima Hasao',
-          badge: 'Field Clearance Officer',
-          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80',
-        };
-      case 'supply':
-        return {
-          id: 'SUP-501',
-          name: 'N. Debbarma',
-          role: 'supply',
-          roleLabel: 'NER Supply & Freight Logistics Director',
-          department: 'Civil Supplies & Emergency Stockpiles',
-          badge: 'Supply Coordinator',
-          avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80',
-        };
-      case 'admin':
-      default:
-        return {
-          id: 'ADM-001',
-          name: 'Col. Sanjeev Hazarika',
-          role: 'admin',
-          roleLabel: 'NER Logistics Command Director',
-          department: 'Integrated Regional Command Center',
-          badge: 'System Admin',
-          avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&auto=format&fit=crop&q=80',
-        };
-    }
+  // ── Compat shims: proxy auth state from AuthContext ───────────────────────
+  // ⚠️  These shims exist so existing dashboard pages that call
+  //     useApp().currentRole / .currentUser / .logout() continue to work.
+  //     New code should use useAuth() directly.
+  let authCtx = null;
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    authCtx = useAuth();
+  } catch {
+    // AuthContext not mounted yet (e.g. in isolated unit tests)
   }
 
-  const setRole = (role) => {
-    localStorage.setItem('ner_shield_role', role);
-    setCurrentRole(role);
-    setCurrentUser(getUserForRole(role));
-  };
-
-  const logout = () => {
-    localStorage.removeItem('ner_shield_role');
-    setCurrentRole('admin');
-    setCurrentUser(getUserForRole('admin'));
-  };
+  const currentRole = authCtx?.currentRole || null;
+  const currentUser = authCtx?.currentUser || null;
+  // setRole is a no-op shim — role is set via AuthContext.login()
+  const setRole = () => {};
+  const logout = authCtx?.logout || (() => {});
 
   // Main State collections
   const [vehicles, setVehicles] = useState(initialVehicles);
@@ -339,10 +298,12 @@ export const AppProvider = ({ children }) => {
   };
 
   const value = {
+    // Auth compat shims (read-only proxies — changes must go through AuthContext)
     currentRole,
     currentUser,
     setRole,
     logout,
+    // Operational data
     vehicles,
     drivers,
     officers,

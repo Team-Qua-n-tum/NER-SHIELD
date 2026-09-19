@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { RoleRoute } from '../components/auth/RoleRoute';
 import { useApp } from '../context/AppContext';
 import { Navbar, Sidebar, NotificationPanel, ChatPanel } from '../components/common';
 import { OperationsMap } from '../components/dashboard/OperationsMap';
@@ -179,4 +180,9 @@ export const MapPage = () => {
   );
 };
 
-export default MapPage;
+const ProtectedMapPage = () => (
+  <RoleRoute allowedRoles={['admin', 'district_officer']}>
+    <MapPage />
+  </RoleRoute>
+);
+export default ProtectedMapPage;
