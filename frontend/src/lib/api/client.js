@@ -4,7 +4,12 @@
  * to local mock telemetry store if the backend service is offline.
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+export const DEMO_MODE = !['false', '0', 'no'].includes(
+  String(import.meta.env.VITE_DEMO_MODE ?? 'true').toLowerCase(),
+);
+const API_BASE_URL = (
+  import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
+).replace(/\/+$/, '');
 const REQUEST_TIMEOUT_MS = 3500;
 
 export class ApiClient {
@@ -51,10 +56,13 @@ export class ApiClient {
       return await response.json();
     } catch (err) {
       clearTimeout(timer);
-      console.warn(`[NER-SHIELD API] ${endpoint} failed (${err.message}). Using local operational store.`);
+      const fallbackMessage = DEMO_MODE
+        ? 'Using local demo data.'
+        : 'Live mode has no synthetic fallback.';
+      console.warn(`[NER-SHIELD API] ${endpoint} failed (${err.message}). ${fallbackMessage}`);
       ApiClient.isBackendAvailable = false;
 
-      if (fallbackData !== null && fallbackData !== undefined) {
+      if (DEMO_MODE && fallbackData !== null && fallbackData !== undefined) {
         return typeof fallbackData === 'function' ? fallbackData() : fallbackData;
       }
       throw err;
