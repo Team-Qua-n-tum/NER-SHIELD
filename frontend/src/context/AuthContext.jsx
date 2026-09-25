@@ -32,7 +32,7 @@ import React, {
 } from 'react';
 import { authApi } from '../lib/api/authApi';
 import { ApiClient } from '../lib/api/client';
-import { DEMO_MODE, ROLE_ALIAS_MAP } from '../lib/demoUsers';
+import { isDemoModeEnabled, ROLE_ALIAS_MAP } from '../lib/demoUsers';
 
 // ─── Session storage keys ────────────────────────────────────────────────────
 const SESSION_KEY = 'ner_shield_session';
@@ -89,7 +89,7 @@ function normalizeRole(role) {
 
 /** Derive data mode from ApiClient state and session flags */
 function deriveDataMode(isDemoSession) {
-  if (isDemoSession || DEMO_MODE) return 'DEMO';
+  if (isDemoSession || isDemoModeEnabled()) return 'DEMO';
   if (ApiClient.isBackendAvailable === false) return 'DEGRADED';
   if (ApiClient.isBackendAvailable === true) return 'LIVE';
   return 'LIVE'; // default optimistic
@@ -101,7 +101,7 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // start true: hydrating
-  const [isDemoMode, setIsDemoMode] = useState(DEMO_MODE);
+  const [isDemoMode, setIsDemoMode] = useState(isDemoModeEnabled());
   const [isDemoSession, setIsDemoSession] = useState(false);
   const [sessionExpired, setSessionExpired] = useState(false);
   const [dataMode, setDataMode] = useState('LIVE');

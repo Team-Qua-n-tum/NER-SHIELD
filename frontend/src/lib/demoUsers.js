@@ -13,6 +13,10 @@
  * When POST /api/v1/auth/login is available, this file becomes unused.
  */
 
+export const isDemoModeEnabled = () =>
+  import.meta.env?.VITE_DEMO_MODE === 'true' ||
+  import.meta.env?.VITE_DEMO_MODE === true;
+
 export const DEMO_MODE =
   import.meta.env?.VITE_DEMO_MODE === 'true' ||
   import.meta.env?.VITE_DEMO_MODE === true;
@@ -175,7 +179,7 @@ export function findDemoUserByEmail(email) {
  * ⚠️ NOT REAL SECURITY — demo only.
  */
 export function validateDemoCredentials(email, password) {
-  if (!DEMO_MODE) return null;
+  if (!isDemoModeEnabled()) return null;
   const user = findDemoUserByEmail(email);
   if (!user) return null;
   if (password !== user.demoPassword) return null;

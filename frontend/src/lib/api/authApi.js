@@ -16,53 +16,50 @@
  */
 
 import { ApiClient } from './client';
-import { validateDemoCredentials, DEMO_MODE } from '../demoUsers';
+import { validateDemoCredentials, isDemoModeEnabled } from '../demoUsers';
 
 export const authApi = {
   /**
-   * Attempt login via backend; fall back to demo credentials in DEMO MODE.
-   * Returns { token, user } on success, throws on failure.
+   * Attempt login via backend in live mode, or validate local demo user when in DEMO MODE.
+   * In DEMO MODE (VITE_DEMO_MODE=true), signs in locally without network calls.
+   * In LIVE MODE (VITE_DEMO_MODE=false), calls backend /auth/login and does not fall back to demo accounts.
+   * Returns { token, user, isDemoSession } on success, throws on failure.
    */
   async login(email, password) {
-    try {
-      const result = await ApiClient.request(
-        '/auth/login',
-        {
-          method: 'POST',
-          body: JSON.stringify({ email, password }),
-        },
-        // Fallback: demo credentials
-        () => {
-          if (!DEMO_MODE) throw new Error('Authentication service unavailable.');
-          const demoUser = validateDemoCredentials(email, password);
-          if (!demoUser) throw new Error('Invalid credentials.');
-          return {
-            token: `demo-token-${demoUser.id}-${Date.now()}`,
-            user: demoUser,
-            isDemoSession: true,
-          };
-        }
-      );
-      return result;
-    } catch (err) {
-      // Re-throw to surface clear error to UI
-      throw err;
+    if (isDemoModeEnabled()) {
+      const demoUser = validateDemoCredentials(email, password);
+      if (!demoUser) throw new Error('Invalid credentials.');
+      return {
+        token: `demo-token-${demoUser.id}-${Date.now()}`,
+        user: demoUser,
+        isDemoSession: true,
+      };
     }
+
+    return await ApiClient.request(
+      '/auth/login',
+      {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      }
+    );
   },
 
   /**
-   * Logout — invalidates server session.
+   * Logout — invalidates server session if in live mode.
    * Graceful no-op in demo mode or if backend unavailable.
    */
   async logout(token) {
+    if (isDemoModeEnabled()) {
+      return { success: true };
+    }
     try {
       await ApiClient.request(
         '/auth/logout',
         {
           method: 'POST',
           headers: token ? { Authorization: `Bearer ${token}` } : {},
-        },
-        () => ({ success: true }) // demo fallback
+        }
       );
     } catch {
       // Always allow logout to succeed locally
@@ -74,14 +71,16 @@ export const authApi = {
    * Returns new { token } or null on failure.
    */
   async refresh(token) {
+    if (isDemoModeEnabled()) {
+      return { token, refreshed: false };
+    }
     try {
       return await ApiClient.request(
         '/auth/refresh',
         {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` },
-        },
-        () => ({ token, refreshed: false }) // demo: return same token
+        }
       );
     } catch {
       return null;
@@ -93,14 +92,16 @@ export const authApi = {
    * Returns user object or null.
    */
   async me(token) {
+    if (isDemoModeEnabled()) {
+      return null;
+    }
     try {
       return await ApiClient.request(
         '/auth/me',
         {
           method: 'GET',
           headers: token ? { Authorization: `Bearer ${token}` } : {},
-        },
-        () => null // no demo fallback for /me — context restores from sessionStorage
+        }
       );
     } catch {
       return null;

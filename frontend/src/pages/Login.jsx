@@ -158,10 +158,9 @@ export const Login = () => {
             >
               <FlaskConical className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" aria-hidden="true" />
               <div>
-                <p className="text-xs font-bold text-purple-300">⚠️ DEMO SESSION — NOT REAL AUTHENTICATION</p>
+                <p className="text-xs font-bold text-purple-300">DEMO — SYNTHETIC DATA</p>
                 <p className="text-xs text-purple-300/90 mt-0.5 leading-relaxed">
-                  Backend auth service is not connected. Using synthetic demo users.
-                  No real credentials are accepted or stored.
+                  This demonstration environment uses local synthetic accounts and does not connect to a live authentication service.
                 </p>
               </div>
             </div>
