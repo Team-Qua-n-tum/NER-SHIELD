@@ -1,0 +1,90 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "title": "NER Tracked Logistics Fleet",
+    "status": "PROTOTYPE / SYNTHETIC DATA",
+    "region": "North Eastern Region (NER), India"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "id": "VEH-101",
+      "properties": {
+        "vehicleId": "TRK-NER-101",
+        "vehicleType": "Heavy Freight Truck",
+        "driverName": "Ramesh Kumar",
+        "cargo": "Essential Medical Supplies",
+        "origin": "Guwahati Hub",
+        "destination": "Imphal Depot",
+        "speedKmH": 48,
+        "status": "In Transit",
+        "heading": "SE",
+        "lastSignal": "2 mins ago"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [92.20, 26.12]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "VEH-102",
+      "properties": {
+        "vehicleId": "TRK-NER-204",
+        "vehicleType": "Refrigerated Container",
+        "driverName": "Bijen Singh",
+        "cargo": "Perishable Agri Produce",
+        "origin": "Shillong",
+        "destination": "Guwahati Airport",
+        "speedKmH": 35,
+        "status": "Caution - Slowed by Fog",
+        "heading": "N",
+        "lastSignal": "1 min ago"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [91.87, 25.80]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "VEH-103",
+      "properties": {
+        "vehicleId": "EMG-NER-05",
+        "vehicleType": "Emergency Relief Van",
+        "driverName": "Tashi Bhutia",
+        "cargo": "Disaster Relief Kits",
+        "origin": "Guwahati",
+        "destination": "Haflong Clearance Camp",
+        "speedKmH": 62,
+        "status": "Priority Rerouting",
+        "heading": "E",
+        "lastSignal": "Just now"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [92.55, 26.25]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "VEH-104",
+      "properties": {
+        "vehicleId": "TRK-NER-309",
+        "vehicleType": "Fuel Tanker",
+        "driverName": "Sunil Debbarma",
+        "cargo": "High Octane Fuel",
+        "origin": "Guwahati Refinery",
+        "destination": "Agartala Station",
+        "speedKmH": 52,
+        "status": "In Transit",
+        "heading": "SW",
+        "lastSignal": "4 mins ago"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [91.50, 24.15]
+      }
+    }
+  ]
+}
