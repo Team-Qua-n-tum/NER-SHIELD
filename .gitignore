@@ -1,0 +1,35 @@
+node_modules/
+
+# Environment and local configuration
+.env
+.env.*
+!.env.example
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.venv/
+venv/
+env/
+
+# Frontend build output
+dist/
+build/
+.next/
+.vite/
+
+# Logs and local databases
+*.log
+*.sqlite
+*.sqlite3
+
+# Local tooling
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
