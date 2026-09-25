@@ -20,6 +20,12 @@ import { MemoryRouter, useNavigate } from 'react-router-dom';
 // Mock Leaflet and map components
 vi.mock('react-leaflet', () => ({
   MapContainer: ({ children }) => <div data-testid="map-container">{children}</div>,
+  useMap: () => ({
+    getContainer: () => document.createElement('div'),
+    invalidateSize: vi.fn(),
+    on: vi.fn(),
+    off: vi.fn(),
+  }),
   TileLayer: () => <div data-testid="tile-layer" />,
   Polygon: () => null,
   Polyline: () => null,

@@ -83,8 +83,11 @@ htmlcov/
 *.onnx
 
 models/
+!backend/
+!backend/app/
 !backend/app/models/
-!backend/app/models/**
+!backend/app/models/*.py
+!backend/app/models/.gitkeep
 checkpoints/
 runs/
 wandb/
