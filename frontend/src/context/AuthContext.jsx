@@ -218,7 +218,20 @@ export const AuthProvider = ({ children }) => {
    */
   const getRoleHomePath = useCallback(() => {
     if (!user) return '/login';
-    return user.homePath || '/app/admin';
+    switch (user.role) {
+      case 'admin':
+        return '/app/admin/overview';
+      case 'district_officer':
+        return '/app/district/overview';
+      case 'field_officer':
+        return '/app/field/home';
+      case 'logistics_operator':
+        return '/app/logistics/overview';
+      case 'viewer':
+        return '/app/viewer/overview';
+      default:
+        return user.homePath || '/app/viewer/overview';
+    }
   }, [user]);
 
   // ── Context value ─────────────────────────────────────────────────────────

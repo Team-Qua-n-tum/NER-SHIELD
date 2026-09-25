@@ -20,14 +20,14 @@ import React, { useState, useCallback } from 'react';
 import { AppShell } from '../components/layout/AppShell';
 import { RoleRoute } from '../components/auth/RoleRoute';
 import { DataModeBadge } from '../components/auth/DataModeBadge';
+import { RouteSourceCard } from '../components/route/RouteSourceCard';
 import { routesApi } from '../lib/api/routesApi';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
 import {
-  Truck, Route, AlertTriangle, RefreshCw, ChevronDown,
-  Clock, TrendingUp, Zap, AlertCircle, Navigation,
-  CheckCircle2, Info, MapPin, Package, Loader2,
-  ArrowRight, BarChart2, Shield
+  Truck, Route, AlertTriangle, RefreshCw,
+  Clock, Zap, AlertCircle, Navigation,
+  CheckCircle2, Loader2
 } from 'lucide-react';
 
 const RISK_CONFIG = {
@@ -158,7 +158,6 @@ function LogisticsDashboardContent() {
   const myVehicles = myVehicleIds.includes('*')
     ? vehicles
     : vehicles.filter(v => myVehicleIds.includes(v.id));
-  const allVehicles = vehicles; // for reference count only
 
   // Route-impact alerts (all alerts affecting routes)
   const routeAlerts = alerts.filter(a =>
@@ -177,7 +176,7 @@ function LogisticsDashboardContent() {
       if (result.status !== 'no_route' && result.routes?.length > 0) {
         setSelectedRoute(result.routes[0]);
       }
-    } catch (err) {
+    } catch {
       setRouteError('Failed to retrieve route recommendations. Try again.');
     } finally {
       setIsRouting(false);
@@ -315,15 +314,20 @@ function LogisticsDashboardContent() {
 
           {/* Error */}
           {routeError && (
-            <div className="flex items-start gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-400">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-              {routeError}
+            <div className="space-y-2">
+              <div className="flex items-start gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-400">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                {routeError}
+              </div>
+              <RouteSourceCard routeError={routeError} dataMode={dataMode} />
             </div>
           )}
 
           {/* Results */}
           {routeResult && (
             <div className="space-y-3">
+              <RouteSourceCard routeResult={routeResult} dataMode={dataMode} />
+
               {/* Data source badge */}
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-bold text-slate-300">Route Recommendations</h3>

@@ -1,29 +1,28 @@
 /**
  * AppShell
  *
- * The authenticated application wrapper used by all role dashboards.
+ * The unified authenticated application shell used by all role dashboards.
  * Renders:
- *  - Role-specific collapsible Sidebar
- *  - Topbar: user name, RoleBadge, context (district/fleet), DataModeBadge,
- *            notification bell, logout
+ *  - Role-specific collapsible Sidebar (using NavLink and unified ROLE_NAV_CONFIG)
+ *  - Topbar: context, DataModeBadge, notification link, profile dropdown, logout
+ *  - Mobile Drawer (using NavLink)
  *  - SessionExpiredBanner
  *  - Toast renderer
- *  - Main content area
- *
- * Usage:
- *   <AppShell>
- *     <DashboardContent />
- *   </AppShell>
+ *  - Main content area rendering child routes via Outlet
  */
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink, Link, useNavigate, Outlet } from 'react-router-dom';
 import {
-  Shield, MapPin, Radio, Package, Eye,
-  LayoutDashboard, Map, AlertTriangle, Compass,
-  Truck, ShieldCheck, FilePlus, FileText, Activity,
-  Layers, BarChart3, Users, ClipboardList, Bell,
-  LogOut, ChevronLeft, ChevronRight, Menu, X,
-  Route, Navigation, Settings, ListChecks, Zap
+  Shield,
+  Bell,
+  LogOut,
+  ChevronLeft,
+  ChevronRight,
+  Menu,
+  X,
+  User,
+  HelpCircle,
+  Settings,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
@@ -31,65 +30,20 @@ import { RoleBadge } from '../auth/RoleBadge';
 import { DataModeBadge } from '../auth/DataModeBadge';
 import { SessionExpiredBanner } from '../auth/SessionExpiredBanner';
 import { Toast } from '../ui/Toast';
-
-// ─── Role-specific nav items ──────────────────────────────────────────────────
-function getNavItems(role, appCtx) {
-  const unverified = appCtx?.incidents?.filter((i) => !i.verified)?.length || 0;
-  const alertCount = appCtx?.alerts?.length || 0;
-
-  switch (role) {
-    case 'admin':
-      return [
-        { path: '/app/admin', label: 'Operations Overview', icon: LayoutDashboard },
-        { path: '/app/admin/map', label: 'All Districts Map', icon: Map },
-        { path: '/app/admin/vehicles', label: 'Fleet Management', icon: Truck },
-        { path: '/app/admin/incidents', label: 'All Incidents', icon: AlertTriangle, badge: alertCount, badgeColor: 'bg-red-500' },
-        { path: '/app/admin/routes', label: 'Route Planning', icon: Route },
-        { path: '/app/admin/alerts', label: 'Alert Center', icon: Bell, badge: alertCount, badgeColor: 'bg-amber-500' },
-        { path: '/app/admin/districts', label: 'District Connectivity', icon: Layers },
-        { path: '/app/admin/users', label: 'User Management', icon: Users, tag: 'Soon' },
-        { path: '/app/admin/audit', label: 'Audit Log', icon: ClipboardList, tag: 'Soon' },
-      ];
-    case 'district_officer':
-      return [
-        { path: '/app/district', label: 'District Dashboard', icon: LayoutDashboard },
-        { path: '/app/district/map', label: 'District GIS Map', icon: Map },
-        { path: '/app/district/incidents', label: 'Incident Review', icon: ShieldCheck, badge: unverified, badgeColor: 'bg-amber-500' },
-        { path: '/app/district/roads', label: 'Road Status', icon: Activity },
-        { path: '/app/district/routes', label: 'Emergency Routes', icon: Route },
-        { path: '/app/district/alerts', label: 'District Alerts', icon: AlertTriangle, badge: alertCount, badgeColor: 'bg-red-500' },
-        { path: '/app/district/reports', label: 'Field Reports', icon: FileText },
-      ];
-    case 'field_officer':
-      return [
-        { path: '/app/field', label: 'My Dashboard', icon: LayoutDashboard },
-        { path: '/app/field/report', label: 'Report Incident', icon: FilePlus, highlight: true },
-        { path: '/app/field/my-reports', label: 'My Reports', icon: FileText },
-        { path: '/app/field/map', label: 'Area Map', icon: Map },
-        { path: '/app/field/alerts', label: 'Alerts', icon: Bell },
-        { path: '/app/field/notifications', label: 'Notifications', icon: Settings },
-      ];
-    case 'logistics_operator':
-      return [
-        { path: '/app/logistics', label: 'Fleet Overview', icon: Truck },
-        { path: '/app/logistics/routes', label: 'Route Planner', icon: Route, highlight: true },
-        { path: '/app/logistics/alerts', label: 'Route Alerts', icon: Zap, badge: alertCount, badgeColor: 'bg-amber-500' },
-        { path: '/app/logistics/vehicles', label: 'My Vehicles', icon: Navigation },
-      ];
-    case 'viewer':
-      return [
-        { path: '/app/viewer', label: 'Public Status', icon: Eye },
-        { path: '/app/viewer/alerts', label: 'Public Alerts', icon: AlertTriangle },
-      ];
-    default:
-      return [{ path: '/app/admin', label: 'Dashboard', icon: LayoutDashboard }];
-  }
-}
+import { getNavItemsForRole } from '../../config/navigation';
 
 // ─── Sidebar ─────────────────────────────────────────────────────────────────
 function AppSidebar({ collapsed, onCollapse, role, appCtx }) {
-  const location = useLocation();
-  const navItems = getNavItems(role, appCtx);
+  const unverified = appCtx?.incidents?.filter((i) => !i.verified)?.length || 0;
+  const alertCount = appCtx?.alerts?.length || 0;
+  const activeFleet = appCtx?.vehicles?.filter((v) => v.status?.includes('Transit'))?.length || 0;
+
+  const navItems = getNavItemsForRole(role, {
+    incidents: appCtx?.incidents?.length || 0,
+    unverifiedReports: unverified,
+    alerts: alertCount,
+    fleetActive: activeFleet,
+  });
 
   return (
     <aside
@@ -115,6 +69,7 @@ function AppSidebar({ collapsed, onCollapse, role, appCtx }) {
         )}
         <button
           onClick={onCollapse}
+          aria-label={collapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
           className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
@@ -125,34 +80,29 @@ function AppSidebar({ collapsed, onCollapse, role, appCtx }) {
       <nav className="flex-1 py-3 space-y-0.5 overflow-y-auto px-2">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = location.pathname === item.path ||
-            (item.path !== '/app/admin' && location.pathname.startsWith(item.path));
 
           return (
-            <Link
+            <NavLink
               key={item.path}
               to={item.path}
               title={collapsed ? item.label : undefined}
-              className={`flex items-center gap-3 px-2.5 py-2 rounded-xl text-xs font-medium transition-all group relative ${
-                isActive
-                  ? 'bg-blue-600/20 text-blue-300 border border-blue-500/20'
-                  : item.highlight
-                  ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20'
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-white border border-transparent'
-              }`}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-2.5 py-2 rounded-xl text-xs font-medium transition-all group relative ${
+                  isActive
+                    ? 'bg-blue-600/20 text-blue-300 border border-blue-500/20 font-bold'
+                    : item.highlight
+                    ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20'
+                    : 'text-slate-400 hover:bg-slate-800 hover:text-white border border-transparent'
+                }`
+              }
             >
               <Icon className={`shrink-0 ${collapsed ? 'w-5 h-5' : 'w-4 h-4'}`} />
               {!collapsed && (
                 <>
                   <span className="flex-1 truncate">{item.label}</span>
-                  {item.badge > 0 && (
+                  {item.badge && (
                     <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full text-white ${item.badgeColor || 'bg-blue-500'}`}>
                       {item.badge}
-                    </span>
-                  )}
-                  {item.tag && (
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-slate-700 text-slate-400">
-                      {item.tag}
                     </span>
                   )}
                 </>
@@ -163,7 +113,7 @@ function AppSidebar({ collapsed, onCollapse, role, appCtx }) {
                   {item.label}
                 </div>
               )}
-            </Link>
+            </NavLink>
           );
         })}
       </nav>
@@ -172,7 +122,7 @@ function AppSidebar({ collapsed, onCollapse, role, appCtx }) {
 }
 
 // ─── Topbar ───────────────────────────────────────────────────────────────────
-function AppTopbar({ collapsed, onToggleMobile, mobileOpen, user, dataMode }) {
+function AppTopbar({ onToggleMobile, mobileOpen, user, dataMode }) {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
@@ -194,6 +144,7 @@ function AppTopbar({ collapsed, onToggleMobile, mobileOpen, user, dataMode }) {
       <div className="flex items-center gap-3">
         <button
           onClick={onToggleMobile}
+          aria-label="Toggle Navigation Drawer"
           className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
         >
           {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -211,25 +162,42 @@ function AppTopbar({ collapsed, onToggleMobile, mobileOpen, user, dataMode }) {
         <DataModeBadge mode={dataMode} />
       </div>
 
-      {/* Right: user info + logout */}
+      {/* Right: common actions + user info + profile dropdown */}
       <div className="flex items-center gap-2">
-        <div className="hidden sm:flex items-center gap-2">
+        <Link
+          to="/app/notifications"
+          aria-label="Notifications"
+          className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+        >
+          <Bell className="w-4 h-4" />
+        </Link>
+        <Link
+          to="/app/help"
+          aria-label="Help"
+          className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+        >
+          <HelpCircle className="w-4 h-4" />
+        </Link>
+
+        <div className="hidden sm:flex items-center gap-2 ml-2">
           <div className="text-right">
             <p className="text-xs font-semibold text-white leading-tight">{user?.name}</p>
           </div>
           <RoleBadge role={user?.role} size="xs" />
         </div>
+
         <div className="relative">
           <button
             onClick={() => setProfileOpen(!profileOpen)}
-            className="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center hover:bg-slate-700 transition-colors"
+            aria-label="User Profile Menu"
+            className="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center hover:bg-slate-700 transition-colors ml-1"
           >
             <span className="text-sm font-bold text-white">
               {user?.name?.charAt(0) || 'U'}
             </span>
           </button>
           {profileOpen && (
-            <div className="absolute right-0 top-full mt-2 w-52 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl z-50 overflow-hidden">
+            <div className="absolute right-0 top-full mt-2 w-56 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl z-50 overflow-hidden">
               <div className="p-3 border-b border-slate-800">
                 <p className="text-xs font-bold text-white truncate">{user?.name}</p>
                 <p className="text-[10px] text-slate-500 truncate">{user?.email}</p>
@@ -237,7 +205,31 @@ function AppTopbar({ collapsed, onToggleMobile, mobileOpen, user, dataMode }) {
                   <RoleBadge role={user?.role} size="xs" />
                 </div>
               </div>
-              <div className="p-1">
+              <div className="p-1 space-y-0.5">
+                <Link
+                  to="/app/profile"
+                  onClick={() => setProfileOpen(false)}
+                  className="flex items-center gap-2 w-full px-3 py-2 rounded-xl text-xs text-slate-300 hover:bg-slate-800 font-medium transition-colors"
+                >
+                  <User className="w-4 h-4 text-cyan-400" />
+                  My Profile
+                </Link>
+                <Link
+                  to="/app/notifications"
+                  onClick={() => setProfileOpen(false)}
+                  className="flex items-center gap-2 w-full px-3 py-2 rounded-xl text-xs text-slate-300 hover:bg-slate-800 font-medium transition-colors"
+                >
+                  <Settings className="w-4 h-4 text-amber-400" />
+                  Notification Settings
+                </Link>
+                <Link
+                  to="/app/help"
+                  onClick={() => setProfileOpen(false)}
+                  className="flex items-center gap-2 w-full px-3 py-2 rounded-xl text-xs text-slate-300 hover:bg-slate-800 font-medium transition-colors"
+                >
+                  <HelpCircle className="w-4 h-4 text-indigo-400" />
+                  Help & Manual
+                </Link>
                 <button
                   onClick={handleLogout}
                   data-testid="logout-button"
@@ -257,8 +249,16 @@ function AppTopbar({ collapsed, onToggleMobile, mobileOpen, user, dataMode }) {
 
 // ─── Mobile Drawer ────────────────────────────────────────────────────────────
 function MobileDrawer({ open, onClose, role, appCtx }) {
-  const location = useLocation();
-  const navItems = getNavItems(role, appCtx);
+  const unverified = appCtx?.incidents?.filter((i) => !i.verified)?.length || 0;
+  const alertCount = appCtx?.alerts?.length || 0;
+  const activeFleet = appCtx?.vehicles?.filter((v) => v.status?.includes('Transit'))?.length || 0;
+
+  const navItems = getNavItemsForRole(role, {
+    incidents: appCtx?.incidents?.length || 0,
+    unverifiedReports: unverified,
+    alerts: alertCount,
+    fleetActive: activeFleet,
+  });
 
   if (!open) return null;
 
@@ -280,28 +280,29 @@ function MobileDrawer({ open, onClose, role, appCtx }) {
         <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.path;
             return (
-              <Link
+              <NavLink
                 key={item.path}
                 to={item.path}
                 onClick={onClose}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all ${
-                  isActive
-                    ? 'bg-blue-600/20 text-blue-300 border border-blue-500/20'
-                    : item.highlight
-                    ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20'
-                    : 'text-slate-400 hover:bg-slate-800 hover:text-white border border-transparent'
-                }`}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all ${
+                    isActive
+                      ? 'bg-blue-600/20 text-blue-300 border border-blue-500/20 font-bold'
+                      : item.highlight
+                      ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20'
+                      : 'text-slate-400 hover:bg-slate-800 hover:text-white border border-transparent'
+                  }`
+                }
               >
                 <Icon className="w-4 h-4 shrink-0" />
                 <span className="flex-1">{item.label}</span>
-                {item.badge > 0 && (
+                {item.badge && (
                   <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full text-white ${item.badgeColor || 'bg-blue-500'}`}>
                     {item.badge}
                   </span>
                 )}
-              </Link>
+              </NavLink>
             );
           })}
         </nav>
@@ -314,7 +315,7 @@ function MobileDrawer({ open, onClose, role, appCtx }) {
 export const AppShell = ({ children }) => {
   const { user, dataMode } = useAuth();
   const appCtx = useApp();
-  const { toast, closeToast } = appCtx;
+  const { toast, closeToast } = appCtx || {};
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -351,9 +352,9 @@ export const AppShell = ({ children }) => {
           dataMode={dataMode}
         />
 
-        {/* Content */}
+        {/* Content rendered via Outlet (or children for backwards compatibility) */}
         <main className="flex-1 overflow-y-auto">
-          {children}
+          {children || <Outlet />}
         </main>
       </div>
 

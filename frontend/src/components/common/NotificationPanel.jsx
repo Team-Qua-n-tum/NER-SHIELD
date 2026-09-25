@@ -220,6 +220,9 @@ export const NotificationPanel = ({ isOpen, onClose, onLocateAlert }) => {
             {fcmStatus === 'idle' && (
               <button
                 data-testid="enable-alerts-btn"
+                type="button"
+                aria-pressed={false}
+                aria-label="Enable Emergency Alerts (Push)"
                 onClick={async () => {
                   setFcmStatus('requesting');
                   try {
@@ -258,18 +261,25 @@ export const NotificationPanel = ({ isOpen, onClose, onLocateAlert }) => {
                 }}
                 className="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-blue-400 text-xs font-bold transition-colors"
               >
-                <Bell className="w-3.5 h-3.5" />
-                Enable Emergency Alerts (Push)
+                <Bell className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>Enable Emergency Alerts (Push)</span>
               </button>
             )}
             {fcmStatus === 'requesting' && (
-              <p className="text-center text-xs text-slate-500">Requesting permission…</p>
+              <p className="text-center text-xs text-slate-500" role="status" aria-live="polite">Requesting permission…</p>
             )}
             {fcmStatus === 'granted' && (
-              <p className="text-center text-xs text-emerald-400">✓ Emergency push alerts are active</p>
+              <div
+                className="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold"
+                role="status"
+                aria-live="polite"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>Emergency alerts enabled (Push active)</span>
+              </div>
             )}
             {(fcmStatus === 'denied' || fcmStatus === 'error') && (
-              <p className="text-center text-xs text-amber-400">Push alerts unavailable. Check browser settings.</p>
+              <p className="text-center text-xs text-amber-400" role="alert">Push alerts unavailable. Check browser settings.</p>
             )}
             <p className="text-center text-[11px] text-slate-600">
               Integrated with NER State EOC, BRO &amp; SDRF Units
