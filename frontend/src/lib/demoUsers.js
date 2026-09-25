@@ -13,7 +13,9 @@
  * When POST /api/v1/auth/login is available, this file becomes unused.
  */
 
-export const DEMO_MODE = true; // Set to false when real backend auth is live
+export const DEMO_MODE = !['false', '0', 'no'].includes(
+  String(import.meta.env.VITE_DEMO_MODE ?? 'true').toLowerCase(),
+);
 
 /**
  * Demo user records matching the expected backend /api/v1/auth/me shape.

@@ -41,6 +41,10 @@ export async function requestNotificationPermission() {
     const serviceWorkerRegistration = await navigator.serviceWorker.register(
         '/firebase-messaging-sw.js',
     )
+    serviceWorkerRegistration.active?.postMessage({
+        type: 'configure',
+        config: firebaseConfig,
+    })
 
     return getToken(messaging, { vapidKey, serviceWorkerRegistration })
 }

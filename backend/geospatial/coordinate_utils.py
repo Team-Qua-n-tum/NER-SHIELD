@@ -64,12 +64,21 @@ def validate_ner_bounds(lat: float, lon: float, buffer_deg: float = 1.0) -> bool
     """
     Validate whether (lat, lon) falls within the practical operational NER bounds,
     allowing an optional buffer for viewport panning/zooming.
+
+    Raises ValueError for valid WGS-84 coordinates that are outside the
+    operational region so callers can distinguish them from an invalid
+    coordinate pair.
     """
     assert_wgs84(lat, lon)
-    return (
+    in_bounds = (
         (NER_LAT_MIN - buffer_deg) <= lat <= (NER_LAT_MAX + buffer_deg)
         and (NER_LON_MIN - buffer_deg) <= lon <= (NER_LON_MAX + buffer_deg)
     )
+    if not in_bounds:
+        raise ValueError(
+            f"Coordinates are outside practical NER bounds: lat={lat}, lon={lon}"
+        )
+    return True
 
 
 def is_within_ner(lat: float, lon: float) -> bool:
