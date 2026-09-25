@@ -117,6 +117,7 @@ import LogisticsMapPage from './pages/logistics/LogisticsMapPage';
 import ViewerOverviewPage from './pages/viewer/ViewerOverviewPage';
 import ViewerAlertsPage from './pages/viewer/ViewerAlertsPage';
 
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import './App.css';
 
 /**
@@ -253,6 +254,7 @@ export function App() {
       <AppProvider>
         <Router>
           <AppRoutes />
+          <SpeedInsights />
         </Router>
       </AppProvider>
     </AuthProvider>
