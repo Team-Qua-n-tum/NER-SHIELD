@@ -1,5 +1,5 @@
-﻿import React from "react";
-import { MapContainer, TileLayer } from "react-leaflet";
+﻿import React, { useEffect } from "react";
+import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
 import { DistrictLayer } from "./DistrictLayer";
@@ -13,6 +13,28 @@ const DEFAULT_NER_CENTER = [25.8, 92.5];
 const DEFAULT_NER_ZOOM = 7;
 const OSM_TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 const OSM_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
+const MapSizeObserver = () => {
+  const map = useMap();
+
+  useEffect(() => {
+    const container = map.getContainer();
+    const refreshSize = () => map.invalidateSize({ pan: false });
+    refreshSize();
+
+    if (typeof ResizeObserver === "undefined") {
+      return undefined;
+    }
+
+    const observer = new ResizeObserver(refreshSize);
+
+    observer.observe(container);
+
+    return () => observer.disconnect();
+  }, [map]);
+
+  return null;
+};
 
 export const NERMap = ({
   center = DEFAULT_NER_CENTER,
@@ -57,7 +79,7 @@ export const NERMap = ({
   }
 
   return (
-    <div className={`relative-map-wrapper ${className}`} style={{ position: "relative" }}>
+    <div className={`relative-map-wrapper ${className}`} style={{ position: "relative", minHeight: "320px" }}>
       <MapContainer
         center={center}
         zoom={zoom}
@@ -65,6 +87,7 @@ export const NERMap = ({
         className="leaflet-map-element"
         style={{ height: "100%", width: "100%" }}
       >
+        <MapSizeObserver />
         <TileLayer
           attribution={attribution}
           url={tileUrl}

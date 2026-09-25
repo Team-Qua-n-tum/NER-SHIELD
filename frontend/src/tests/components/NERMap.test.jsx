@@ -7,6 +7,10 @@ import NERMap from '../../components/map/NERMap';
 vi.mock('react-leaflet', () => {
   return {
     MapContainer: ({ children }) => <div data-testid="map-container">{children}</div>,
+    useMap: () => ({
+      getContainer: () => document.createElement('div'),
+      invalidateSize: vi.fn(),
+    }),
     TileLayer: (props) => <div data-testid="tile-layer" data-url={props.url} data-attribution={props.attribution}></div>,
     Polygon: () => null,
     Polyline: () => null,
@@ -37,10 +41,10 @@ describe('NERMap Provider Fallback', () => {
   it('uses OpenStreetMap as default when no env vars are set', () => {
     vi.stubEnv('VITE_MAP_TILE_URL', '');
     vi.stubEnv('VITE_MAP_API_KEY', '');
-    
+
     const { getByTestId } = render(<NERMap />);
     const tileLayer = getByTestId('tile-layer');
-    
+
     expect(tileLayer.getAttribute('data-url')).toBe('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
     expect(tileLayer.getAttribute('data-attribution')).toContain('OpenStreetMap');
   });
@@ -48,12 +52,12 @@ describe('NERMap Provider Fallback', () => {
   it('falls back to OpenStreetMap when a commercial provider URL is given but API key is missing', () => {
     vi.stubEnv('VITE_MAP_TILE_URL', 'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key={apiKey}');
     vi.stubEnv('VITE_MAP_API_KEY', '');
-    
-    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    
+
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
+
     const { getByTestId } = render(<NERMap />);
     const tileLayer = getByTestId('tile-layer');
-    
+
     expect(tileLayer.getAttribute('data-url')).toBe('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
     expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('missing'));
   });
@@ -61,10 +65,10 @@ describe('NERMap Provider Fallback', () => {
   it('uses the commercial provider when API key is present', () => {
     vi.stubEnv('VITE_MAP_TILE_URL', 'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key={apiKey}');
     vi.stubEnv('VITE_MAP_API_KEY', 'test-secret-key-123');
-    
+
     const { getByTestId } = render(<NERMap />);
     const tileLayer = getByTestId('tile-layer');
-    
+
     expect(tileLayer.getAttribute('data-url')).toBe('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=test-secret-key-123');
   });
 });
