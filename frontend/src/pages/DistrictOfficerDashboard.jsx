@@ -19,12 +19,13 @@ import React, { useState } from 'react';
 import { AppShell } from '../components/layout/AppShell';
 import { RoleRoute } from '../components/auth/RoleRoute';
 import { DataModeBadge } from '../components/auth/DataModeBadge';
+import { RouteSourceCard } from '../components/route/RouteSourceCard';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
 import {
-  LayoutDashboard, Map, ShieldCheck, Activity,
-  AlertTriangle, FileText, Route, CheckCircle2,
-  Clock, XCircle, MapPin, Info, RefreshCw, Loader2
+  LayoutDashboard, ShieldCheck, Activity,
+  AlertTriangle, Route, CheckCircle2,
+  Clock, MapPin, Info, Loader2
 } from 'lucide-react';
 import { routesApi } from '../lib/api/routesApi';
 
@@ -285,6 +286,10 @@ function DistrictDashboardContent() {
             {isRouting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Route className="w-3.5 h-3.5" />}
             {isRouting ? 'Planning…' : 'Plan Emergency Relief Route'}
           </button>
+
+          {routeResult && (
+            <RouteSourceCard routeResult={routeResult} dataMode={dataMode} />
+          )}
 
           {routeResult && routeResult.status !== 'no_route' && (
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-2">

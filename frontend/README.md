@@ -44,7 +44,16 @@ npm install
 
 ### 2. Start Development Server
 ```bash
+# Standard mode (connects to live backend API; demo accounts disabled):
 npm run dev
+
+# Deterministic demo mode (activates offline demo accounts and synthetic fallback):
+npm run dev:demo
+```
+
+For environment configuration, copy `.env.development.example` to `.env.local`:
+```bash
+cp .env.development.example .env.local
 ```
 
 ### 3. Run Production Build

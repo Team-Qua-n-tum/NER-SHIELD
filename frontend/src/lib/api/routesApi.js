@@ -28,6 +28,12 @@ export const routesApi = {
           commodity,
           priorityLabel: meta.label,
           riskMultiplier: meta.riskMultiplier,
+          source: 'Local demo fallback',
+          data_mode: 'Demo — synthetic',
+          route_authority: 'Demo scenario',
+          freshness: 'Not applicable',
+          routing_engine: 'Deterministic demo route',
+          isDemoSession: true,
         };
       }
     );

@@ -44,7 +44,7 @@ export const OperationsMap = ({
           <div className="map-title-row">
             <Navigation className="map-title-icon text-emerald" />
             <h3 className="map-title">NER GIS Operational Geospatial Surface</h3>
-            <Badge variant="success" size="sm">Live CartoDB Voyager</Badge>
+            <Badge variant="default" size="sm">CartoDB Voyager Base</Badge>
           </div>
         </div>
 

@@ -136,14 +136,37 @@ class TestCoordinateUtils:
     def test_is_within_ner_outside(self):
         assert is_within_ner(28.7041, 77.1025) is False  # New Delhi
 
+    def test_validate_ner_bounds_valid_accepted(self):
+        # Normal NER coordinate (Guwahati) accepted
+        assert validate_ner_bounds(26.1445, 91.7362) is True
+
     def test_validate_ner_bounds_with_buffer(self):
-        # Slightly outside strict NER but within 1deg buffer (viewport pan)
+        # Slightly outside strict NER (lat 20.5 < 21.0) but within 1deg operational buffer
         assert validate_ner_bounds(20.5, 91.0, buffer_deg=1.0) is True
 
+    def test_validate_ner_bounds_beyond_buffer_raises(self):
+        # Outside operational buffer (lat 19.5 < 20.0 with 1deg buffer)
+        with pytest.raises(ValueError) as excinfo:
+            validate_ner_bounds(19.5, 91.0, buffer_deg=1.0)
+        assert "outside the practical NER operational envelope" in str(excinfo.value)
+
     def test_validate_ner_bounds_far_outside(self):
-        # Clearly outside NER
-        with pytest.raises(ValueError):
+        # Clearly outside NER (Null Island)
+        with pytest.raises(ValueError) as excinfo:
             validate_ner_bounds(0.0, 0.0)
+        assert "outside the practical NER operational envelope" in str(excinfo.value)
+
+    def test_validate_ner_bounds_delhi_rejected(self):
+        # Domestic Indian point outside NER (New Delhi)
+        with pytest.raises(ValueError) as excinfo:
+            validate_ner_bounds(28.7041, 77.1025)
+        assert "outside the practical NER operational envelope" in str(excinfo.value)
+
+    def test_validate_ner_bounds_invalid_wgs84(self):
+        # Invalid WGS84 coordinates rejected
+        with pytest.raises(ValueError) as excinfo:
+            validate_ner_bounds(95.0, 91.0)
+        assert "Invalid WGS-84" in str(excinfo.value)
 
     def test_bearing_north(self):
         bearing = bearing_degrees(0.0, 0.0, 1.0, 0.0)

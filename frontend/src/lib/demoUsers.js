@@ -13,9 +13,9 @@
  * When POST /api/v1/auth/login is available, this file becomes unused.
  */
 
-export const DEMO_MODE = !['false', '0', 'no'].includes(
-  String(import.meta.env.VITE_DEMO_MODE ?? 'true').toLowerCase(),
-);
+export const DEMO_MODE =
+  import.meta.env?.VITE_DEMO_MODE === 'true' ||
+  import.meta.env?.VITE_DEMO_MODE === true;
 
 /**
  * Demo user records matching the expected backend /api/v1/auth/me shape.
@@ -40,7 +40,7 @@ export const DEMO_USERS = [
       'user:manage',
       'audit:read',
     ],
-    homePath: '/app/admin',
+    homePath: '/app/admin/overview',
     demoPassword: 'demo',
   },
   {
@@ -59,7 +59,7 @@ export const DEMO_USERS = [
       'alert:read',
       'district:read_assigned',
     ],
-    homePath: '/app/district',
+    homePath: '/app/district/overview',
     demoPassword: 'demo',
   },
   {
@@ -75,7 +75,7 @@ export const DEMO_USERS = [
       'incident:create', 'incident:read_own',
       'alert:read',
     ],
-    homePath: '/app/field',
+    homePath: '/app/field/home',
     demoPassword: 'demo',
   },
   {
@@ -92,7 +92,7 @@ export const DEMO_USERS = [
       'route:read', 'route:plan', 'route:recalculate',
       'alert:read',
     ],
-    homePath: '/app/logistics',
+    homePath: '/app/logistics/overview',
     demoPassword: 'demo',
   },
   {
@@ -107,7 +107,7 @@ export const DEMO_USERS = [
     permissions: [
       'alert:read_public',
     ],
-    homePath: '/app/viewer',
+    homePath: '/app/viewer/overview',
     demoPassword: 'demo',
   },
 ];

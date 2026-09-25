@@ -13,6 +13,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // ── Mock react-leaflet to avoid jsdom/canvas issues ──────────────────────────
 vi.mock('react-leaflet', () => ({
   MapContainer: ({ children }) => <div data-testid="map-container">{children}</div>,
+  useMap: () => ({
+    getContainer: () => document.createElement('div'),
+    invalidateSize: vi.fn(),
+    on: vi.fn(),
+    off: vi.fn(),
+  }),
   TileLayer: (props) => <div data-testid="tile-layer" data-url={props.url} data-attribution={props.attribution} />,
   Polygon: () => null,
   Polyline: ({ positions, ...rest }) => (
