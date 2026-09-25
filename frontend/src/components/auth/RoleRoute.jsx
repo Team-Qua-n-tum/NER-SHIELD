@@ -14,6 +14,7 @@
  *     authorization independently on every API endpoint.
  */
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 import { PermissionDenied } from './PermissionDenied';
 import { useAuth } from '../../context/AuthContext';
@@ -25,7 +26,7 @@ export const RoleRoute = ({ allowedRoles = [], children }) => {
   return (
     <ProtectedRoute>
       <RoleCheck allowedRoles={allowedRoles} user={user} isLoading={isLoading}>
-        {children}
+        {children || <Outlet />}
       </RoleCheck>
     </ProtectedRoute>
   );
@@ -39,7 +40,7 @@ function RoleCheck({ allowedRoles, user, isLoading, children }) {
     return <PermissionDenied requiredRoles={allowedRoles} userRole={user.role} />;
   }
 
-  return children;
+  return children || <Outlet />;
 }
 
 export default RoleRoute;

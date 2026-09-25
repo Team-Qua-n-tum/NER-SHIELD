@@ -105,7 +105,10 @@ export const Login = () => {
   const demoUsers = DEMO_USERS.filter(u => portalCfg.demoRoles.includes(u.role));
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col text-slate-100 relative overflow-hidden">
+    <div
+      className="min-h-screen bg-slate-950 flex flex-col text-slate-100 relative overflow-hidden"
+      data-testid="login-page"
+    >
       {/* Skip to Content */}
       <a
         href="#main-content"

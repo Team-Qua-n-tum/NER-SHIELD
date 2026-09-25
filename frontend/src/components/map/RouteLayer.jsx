@@ -67,11 +67,10 @@ export const RouteLayer = ({
             [id]: { positions, loaded: true, error: false },
           }));
         } else {
-          // Fallback to raw waypoints as straight lines
-          const positions = waypoints.map(([lng, lat]) => [lat, lng]);
+          // Do not draw straight-line route geometry as a route fallback
           setRouteGeometries((prev) => ({
             ...prev,
-            [id]: { positions, loaded: true, error: true },
+            [id]: { positions: [], loaded: true, error: true },
           }));
         }
       }

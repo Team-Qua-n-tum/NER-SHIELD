@@ -37,14 +37,37 @@ export const AppProvider = ({ children }) => {
   const setRole = () => {};
   const logout = authCtx?.logout || (() => {});
 
-  // Main State collections
-  const [vehicles, setVehicles] = useState(initialVehicles);
-  const [drivers, setDrivers] = useState(initialDrivers);
-  const [officers, setOfficers] = useState(initialOfficers);
-  const [incidents, setIncidents] = useState(initialIncidents);
-  const [districts, setDistricts] = useState(initialDistricts);
-  const [alerts, setAlerts] = useState(mockAlerts);
-  const [routesData, setRoutesData] = useState(mockRouteRecommendations);
+  // ⚠️ DATA SAFETY: Do not globally seed vehicles/incidents/alerts in AppProvider
+  // before session and role are known. Unauthenticated visitors or sessions
+  // without a known role start with empty operational collections.
+  const isSessionReady = Boolean(authCtx?.isAuthenticated && authCtx?.user?.role);
+  const [vehicles, setVehicles] = useState(() => (isSessionReady ? initialVehicles : []));
+  const [drivers, setDrivers] = useState(() => (isSessionReady ? initialDrivers : []));
+  const [officers, setOfficers] = useState(() => (isSessionReady ? initialOfficers : []));
+  const [incidents, setIncidents] = useState(() => (isSessionReady ? initialIncidents : []));
+  const [districts, setDistricts] = useState(() => (isSessionReady ? initialDistricts : []));
+  const [alerts, setAlerts] = useState(() => (isSessionReady ? mockAlerts : []));
+  const [routesData, setRoutesData] = useState(() => (isSessionReady ? mockRouteRecommendations : null));
+
+  React.useEffect(() => {
+    if (authCtx?.isAuthenticated && authCtx?.user?.role) {
+      setVehicles((prev) => (prev.length > 0 ? prev : initialVehicles));
+      setDrivers((prev) => (prev.length > 0 ? prev : initialDrivers));
+      setOfficers((prev) => (prev.length > 0 ? prev : initialOfficers));
+      setIncidents((prev) => (prev.length > 0 ? prev : initialIncidents));
+      setDistricts((prev) => (prev.length > 0 ? prev : initialDistricts));
+      setAlerts((prev) => (prev.length > 0 ? prev : mockAlerts));
+      setRoutesData((prev) => (prev ? prev : mockRouteRecommendations));
+    } else if (authCtx && !authCtx.isAuthenticated) {
+      setVehicles([]);
+      setDrivers([]);
+      setOfficers([]);
+      setIncidents([]);
+      setDistricts([]);
+      setAlerts([]);
+      setRoutesData(null);
+    }
+  }, [authCtx?.isAuthenticated, authCtx?.user?.role]);
 
   // Global Interactive States
   const [emergencyMode, setEmergencyMode] = useState(false);
