@@ -1,11 +1,3 @@
-
----
-
-# 2. `.gitignore`
-
-Copy this entire file:
-
-```gitignore
 # ============================================================
 # NER-SHIELD .gitignore
 # ============================================================
@@ -19,6 +11,7 @@ Copy this entire file:
 .env.development.local
 .env.test.local
 .env.production.local
+.hintrc
 
 *.pem
 *.key
@@ -28,7 +21,7 @@ credentials/
 config/secrets/
 
 # ------------------------------------------------------------
-# Node.js / Next.js
+# Node.js / Frontend
 # ------------------------------------------------------------
 
 node_modules/
@@ -56,11 +49,8 @@ pnpm-debug.log*
 __pycache__/
 *.py[cod]
 *$py.class
-
 *.so
-
 .Python
-
 .venv/
 venv/
 env/
@@ -86,15 +76,15 @@ htmlcov/
 *.pkl
 *.pickle
 *.joblib
-
 *.h5
 *.hdf5
-
 *.pt
 *.pth
 *.onnx
 
 models/
+!backend/app/models/
+!backend/app/models/**
 checkpoints/
 runs/
 wandb/
@@ -128,21 +118,12 @@ temp/
 *.temp
 
 # ------------------------------------------------------------
-# Testing / Coverage
-# ------------------------------------------------------------
-
-coverage/
-.pytest_cache/
-
-# ------------------------------------------------------------
 # IDE
 # ------------------------------------------------------------
 
 .vscode/
 .idea/
 *.iml
-
-# VS Code local settings
 .history/
 
 # ------------------------------------------------------------
@@ -173,7 +154,6 @@ Desktop.ini
 *.swp
 *.swo
 
-# Generated API clients
 generated/
 
 # ------------------------------------------------------------

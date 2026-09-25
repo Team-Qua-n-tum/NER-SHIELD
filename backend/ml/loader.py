@@ -5,12 +5,12 @@ Singleton model loader for the NER-SHIELD disruption risk model.
 
 The loader:
 1. Tries to load the pre-trained pipeline from disk (MODEL_PATH).
-2. If the artifact is missing (first-run or gitignored), it re-trains
-   automatically from the synthetic dataset and saves the artifact.
+2. If the artifact is missing, logs a warning and returns None.
+   The caller (risk_engine) must fall back to the deterministic heuristic.
 3. Caches the model in memory for subsequent calls (no repeated I/O).
 
-This makes the system self-healing for fresh checkouts where the
-.joblib artifact was not committed to git.
+IMPORTANT: This loader NEVER auto-retrains during a web request.
+Training is an offline process run via backend/ai/disruption/train.py.
 """
 
 from __future__ import annotations
@@ -38,8 +38,6 @@ _DEFAULT_MODEL_PATH = (
     else _PROJECT_ROOT / "backend" / "ai" / "models" / "disruption_model.joblib"
 )
 
-_TRAIN_SCRIPT = _PROJECT_ROOT / "backend" / "ai" / "disruption" / "train.py"
-
 
 # ---------------------------------------------------------------------------
 # Singleton loader
@@ -53,16 +51,23 @@ class ModelLoader:
     Usage
     -----
         model = ModelLoader.get_model()
-        proba = model.predict_proba(X)
+        if model is None:
+            # use deterministic heuristic fallback
+        else:
+            proba = model.predict_proba(X)
     """
 
-    _model = None  # cached sklearn Pipeline
+    _model = None          # cached sklearn Pipeline or None
+    _load_attempted = False  # True once we have tried (even if failed)
     _model_path: Path = _DEFAULT_MODEL_PATH
 
     @classmethod
     def get_model(cls, model_path: Optional[Path] = None):
         """
-        Return the cached model, loading or re-training if needed.
+        Return the cached model, loading from disk if not yet loaded.
+
+        Returns None if the artifact is missing or unloadable.
+        Never triggers model training.
 
         Parameters
         ----------
@@ -71,42 +76,46 @@ class ModelLoader:
         """
         target_path = Path(model_path) if model_path else cls._model_path
 
-        # Return cached if already loaded from the same path
-        if cls._model is not None:
+        # Return cached result (may be None if last load failed)
+        if cls._load_attempted and model_path is None:
             return cls._model
 
         if target_path.exists():
-            logger.info("Loading model from %s", target_path)
-            cls._model = joblib.load(target_path)
-            logger.info("Model loaded successfully.")
-            return cls._model
-
-        # Artifact missing — re-train from dataset
-        logger.warning(
-            "Model artifact not found at %s. Re-training from dataset...",
-            target_path,
-        )
-        cls._model = cls._retrain_and_save(target_path)
-        return cls._model
+            try:
+                logger.info("[ModelLoader] Loading model from %s", target_path)
+                loaded = joblib.load(target_path)
+                cls._model = loaded
+                cls._load_attempted = True
+                logger.info("[ModelLoader] Model loaded successfully.")
+                return cls._model
+            except Exception as exc:
+                logger.warning(
+                    "[ModelLoader] Failed to load model from %s: %s. "
+                    "Risk engine will use deterministic heuristic.",
+                    target_path,
+                    exc,
+                )
+                cls._model = None
+                cls._load_attempted = True
+                return None
+        else:
+            logger.warning(
+                "[ModelLoader] Model artifact not found at %s. "
+                "Risk engine will use deterministic heuristic. "
+                "Run backend/ai/disruption/train.py offline to create the artifact.",
+                target_path,
+            )
+            cls._model = None
+            cls._load_attempted = True
+            return None
 
     @classmethod
-    def _retrain_and_save(cls, save_path: Path):
-        """Re-train the model inline and save artifact."""
-        # Import here to avoid circular imports
-        from backend.ai.disruption.train import train  # noqa: PLC0415
-
-        report = train(
-            data_path=_PROJECT_ROOT / "data" / "synthetic" / "disruption_dataset.csv"
-        )
-        logger.info(
-            "Re-trained model: %s (AUC-ROC=%.4f)",
-            report["selected_model"],
-            report["selected_metrics"]["roc_auc"],
-        )
-        model = joblib.load(save_path)
-        return model
+    def is_model_available(cls) -> bool:
+        """Return True if a trained model artifact is loaded and ready."""
+        return cls._load_attempted and cls._model is not None
 
     @classmethod
     def reset(cls) -> None:
         """Clear cached model (useful in tests to force reload)."""
         cls._model = None
+        cls._load_attempted = False

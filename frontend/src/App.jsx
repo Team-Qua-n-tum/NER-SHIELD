@@ -1,250 +1,100 @@
-import React, { useState } from "react";
-import { NERMap } from "./components/map";
-import { Layers, MapPin, Truck, AlertTriangle, ShieldAlert, Navigation, Info, Activity } from "lucide-react";
-import "./App.css";
+/**
+ * NER-SHIELD App Router
+ *
+ * Route structure:
+ *   PUBLIC  /                     → Landing page (no live data before login)
+ *   PUBLIC  /login                → Login (email/password, demo mode)
+ *
+ *   PROTECTED (admin)             /app/admin
+ *   PROTECTED (district_officer)  /app/district
+ *   PROTECTED (field_officer)     /app/field
+ *   PROTECTED (logistics_operator) /app/logistics
+ *   PROTECTED (viewer)            /app/viewer
+ *   PROTECTED (admin)             /app/map, /app/risk, /app/analyzer, /app/incidents
+ *
+ *   LEGACY REDIRECTS: /admin → /app/admin, /driver → /app/field, etc.
+ *   /denied → PermissionDenied (public, no auth needed to view)
+ *
+ * ⚠️  SECURITY NOTE: ProtectedRoute and RoleRoute are UI-layer guards only.
+ *     The backend MUST enforce authorization on every API request independently.
+ */
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { AppProvider } from './context/AppContext';
 
-function App() {
-  // Layer Visibility States
-  const [showDistricts, setShowDistricts] = useState(true);
-  const [showRoads, setShowRoads] = useState(true);
-  const [showIncidents, setShowIncidents] = useState(true);
-  const [showVehicles, setShowVehicles] = useState(true);
-  const [showRisks, setShowRisks] = useState(true);
-  const [showRoutes, setShowRoutes] = useState(true);
+// Public pages
+import Home from './pages/Home';
+import Login from './pages/Login';
 
-  // Active Selection Info State
-  const [selectedItem, setSelectedItem] = useState({
-    type: "System Notice",
-    data: {
-      title: "NER GIS Module Ready",
-      description: "Click on any district, road line, incident marker, or logistics vehicle to view detailed geospatial telemetry.",
-    },
-  });
+// Protected role pages (default exports are ProtectedXxx wrappers)
+import AdminDashboard from './pages/AdminDashboard';
+import DriverDashboard from './pages/DriverDashboard';
+import LocalOfficerDashboard from './pages/LocalOfficerDashboard';
+import SupplyDashboard from './pages/SupplyDashboard';
+import FieldOfficerDashboard from './pages/FieldOfficerDashboard';
+import LogisticsOperatorDashboard from './pages/LogisticsOperatorDashboard';
+import DistrictOfficerDashboard from './pages/DistrictOfficerDashboard';
+import ViewerDashboard from './pages/ViewerDashboard';
 
-  const [selectedRouteId, setSelectedRouteId] = useState(undefined);
+// Legacy pages (still wrapped internally with ProtectedRoute via RoleRoute in their file)
+import MapPage from './pages/MapPage';
+import RiskPage from './pages/RiskPage';
+import AnalyzerPage from './pages/AnalyzerPage';
+import AddIncidentPage from './pages/AddIncidentPage';
 
+// Auth components
+import { PermissionDenied } from './components/auth/PermissionDenied';
+
+import './App.css';
+
+export function App() {
   return (
-    <div className="dashboard-app">
-      {/* Header Bar */}
-      <header className="dashboard-header">
-        <div className="header-brand">
-          <div className="brand-icon-wrapper">
-            <Navigation className="brand-icon" />
-          </div>
-          <div className="brand-details">
-            <div className="brand-title-row">
-              <h1>NER-SHIELD</h1>
-              <span className="badge badge-sih">SIH26002</span>
-              <span className="badge badge-gis">GIS Module</span>
-            </div>
-            <p className="brand-subtitle">
-              Smart Logistics & Accessibility Intelligence Platform — North Eastern Region (NER)
-            </p>
-          </div>
-        </div>
+    <AuthProvider>
+      <AppProvider>
+        <Router>
+          <Routes>
 
-        {/* Prototype Data Banner Tag */}
-        <div className="prototype-banner">
-          <Info className="info-icon" />
-          <span>
-            <strong>PROTOTYPE DATA:</strong> GeoJSON synthetic telemetry representing Assam, Meghalaya, Nagaland & Manipur
-          </span>
-        </div>
-      </header>
+            {/* ── Public Routes (no auth required) ───────────────────── */}
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            {/* PermissionDenied is public so authenticated users can be redirected here */}
+            <Route path="/denied" element={<PermissionDenied />} />
 
-      {/* Main Content Area */}
-      <div className="dashboard-content">
-        {/* Left Control Sidebar */}
-        <aside className="dashboard-sidebar">
-          {/* Quick Metrics */}
-          <div className="card metrics-card">
-            <h2 className="card-title">
-              <Activity className="card-title-icon text-emerald" />
-              GIS Overview
-            </h2>
-            <div className="metrics-grid">
-              <div className="metric-box">
-                <div className="metric-label">Districts</div>
-                <div className="metric-val text-white">6 Covered</div>
-              </div>
-              <div className="metric-box">
-                <div className="metric-label">Road Corridors</div>
-                <div className="metric-val text-emerald">5 Major</div>
-              </div>
-              <div className="metric-box">
-                <div className="metric-label">Active Incidents</div>
-                <div className="metric-val text-rose">4 Field</div>
-              </div>
-              <div className="metric-box">
-                <div className="metric-label">Logistics Fleet</div>
-                <div className="metric-val text-blue">4 Active</div>
-              </div>
-            </div>
-          </div>
+            {/* ── New Protected Role Routes ───────────────────────────── */}
+            {/* Default exports are role-guarded wrappers */}
+            <Route path="/app/admin" element={<AdminDashboard />} />
+            <Route path="/app/district" element={<DistrictOfficerDashboard />} />
+            <Route path="/app/field" element={<FieldOfficerDashboard />} />
+            <Route path="/app/logistics" element={<LogisticsOperatorDashboard />} />
+            <Route path="/app/viewer" element={<ViewerDashboard />} />
 
-          {/* Layer Control Panel */}
-          <div className="card controls-card">
-            <h2 className="card-title">
-              <Layers className="card-title-icon text-emerald" />
-              Geospatial Layers
-            </h2>
-            <div className="layer-options-list">
-              <label className="layer-checkbox-label">
-                <span className="layer-checkbox-text">
-                  <span className="layer-indicator district-indicator"></span>
-                  District Boundaries
-                </span>
-                <input
-                  type="checkbox"
-                  checked={showDistricts}
-                  onChange={(e) => setShowDistricts(e.target.checked)}
-                  className="custom-checkbox"
-                />
-              </label>
+            {/* Dedicated operational pages */}
+            <Route path="/app/map" element={<MapPage />} />
+            <Route path="/app/risk" element={<RiskPage />} />
+            <Route path="/app/analyzer" element={<AnalyzerPage />} />
+            <Route path="/app/incidents" element={<AddIncidentPage />} />
 
-              <label className="layer-checkbox-label">
-                <span className="layer-checkbox-text">
-                  <span className="layer-indicator road-indicator"></span>
-                  Road Corridors
-                </span>
-                <input
-                  type="checkbox"
-                  checked={showRoads}
-                  onChange={(e) => setShowRoads(e.target.checked)}
-                  className="custom-checkbox"
-                />
-              </label>
+            {/* ── Legacy Redirect Aliases (backward compat) ───────────── */}
+            <Route path="/admin" element={<Navigate to="/app/admin" replace />} />
+            <Route path="/driver" element={<Navigate to="/app/field" replace />} />
+            <Route path="/officer" element={<Navigate to="/app/district" replace />} />
+            <Route path="/supply" element={<Navigate to="/app/logistics" replace />} />
+            <Route path="/map" element={<Navigate to="/app/map" replace />} />
+            <Route path="/risk" element={<Navigate to="/app/risk" replace />} />
+            <Route path="/analyzer" element={<Navigate to="/app/analyzer" replace />} />
+            <Route path="/incidents" element={<Navigate to="/app/incidents" replace />} />
 
-              <label className="layer-checkbox-label">
-                <span className="layer-checkbox-text">
-                  <AlertTriangle className="layer-checkbox-icon text-rose" />
-                  Incident Markers
-                </span>
-                <input
-                  type="checkbox"
-                  checked={showIncidents}
-                  onChange={(e) => setShowIncidents(e.target.checked)}
-                  className="custom-checkbox"
-                />
-              </label>
+            {/* Also keep old /driver, /officer pages as aliases for compatibility */}
+            {/* (Already using /app/* paths above) */}
 
-              <label className="layer-checkbox-label">
-                <span className="layer-checkbox-text">
-                  <Truck className="layer-checkbox-icon text-blue" />
-                  Vehicle Locations
-                </span>
-                <input
-                  type="checkbox"
-                  checked={showVehicles}
-                  onChange={(e) => setShowVehicles(e.target.checked)}
-                  className="custom-checkbox"
-                />
-              </label>
+            {/* ── Fallback ────────────────────────────────────────────── */}
+            <Route path="*" element={<Navigate to="/" replace />} />
 
-              <label className="layer-checkbox-label">
-                <span className="layer-checkbox-text">
-                  <ShieldAlert className="layer-checkbox-icon text-purple" />
-                  Risk Hazard Zones
-                </span>
-                <input
-                  type="checkbox"
-                  checked={showRisks}
-                  onChange={(e) => setShowRisks(e.target.checked)}
-                  className="custom-checkbox"
-                />
-              </label>
-
-              <label className="layer-checkbox-label">
-                <span className="layer-checkbox-text">
-                  <Navigation className="layer-checkbox-icon text-emerald" />
-                  Route Visualization
-                </span>
-                <input
-                  type="checkbox"
-                  checked={showRoutes}
-                  onChange={(e) => setShowRoutes(e.target.checked)}
-                  className="custom-checkbox"
-                />
-              </label>
-            </div>
-          </div>
-
-          {/* Route Filter Selector */}
-          <div className="card routes-card">
-            <h2 className="card-title">Route Filter Focus</h2>
-            <div className="route-buttons-list">
-              <button
-                onClick={() => setSelectedRouteId(undefined)}
-                className={`route-btn ${selectedRouteId === undefined ? "route-btn-active active-all" : ""}`}
-              >
-                Show All Routes
-              </button>
-              <button
-                onClick={() => setSelectedRouteId("ROUTE-PRIMARY")}
-                className={`route-btn ${selectedRouteId === "ROUTE-PRIMARY" ? "route-btn-active active-blocked" : ""}`}
-              >
-                🔴 Primary Route (Blocked)
-              </button>
-              <button
-                onClick={() => setSelectedRouteId("ROUTE-ALTERNATE")}
-                className={`route-btn ${selectedRouteId === "ROUTE-ALTERNATE" ? "route-btn-active active-safe" : ""}`}
-              >
-                🟢 AI-Recommended Safe Route
-              </button>
-            </div>
-          </div>
-        </aside>
-
-        {/* Center/Right Map Display & Inspector */}
-        <section className="dashboard-main">
-          {/* Map Container */}
-          <div className="map-view-wrapper">
-            <NERMap
-              showDistricts={showDistricts}
-              showRoads={showRoads}
-              showIncidents={showIncidents}
-              showVehicles={showVehicles}
-              showRisks={showRisks}
-              showRoutes={showRoutes}
-              selectedRouteId={selectedRouteId}
-              onDistrictSelect={(data) => setSelectedItem({ type: "District", data })}
-              onRoadSelect={(data) => setSelectedItem({ type: "Road Segment", data })}
-              onIncidentSelect={(data) => setSelectedItem({ type: "Field Incident", data })}
-              onVehicleSelect={(data) => setSelectedItem({ type: "Logistics Vehicle", data })}
-              onRiskSelect={(data) => setSelectedItem({ type: "Hazard Risk Zone", data })}
-              onRouteSelect={(data) => setSelectedItem({ type: "Logistics Route", data })}
-              className="gis-map-container"
-            />
-          </div>
-
-          {/* Interactive Inspection Panel */}
-          {selectedItem && (
-            <div className="card inspector-card">
-              <div className="inspector-header">
-                <div className="inspector-title">
-                  <MapPin className="inspector-icon" />
-                  <span>Geospatial Inspector — {selectedItem.type}</span>
-                </div>
-                <button onClick={() => setSelectedItem(null)} className="clear-selection-btn">
-                  Clear Selection
-                </button>
-              </div>
-
-              <div className="inspector-grid">
-                {Object.entries(selectedItem.data).map(([key, value]) => (
-                  <div key={key} className="inspector-box">
-                    <div className="inspector-label">{key.replace(/([A-Z])/g, " $1")}</div>
-                    <div className="inspector-value" title={typeof value === "object" ? JSON.stringify(value) : String(value)}>
-                      {typeof value === "object" ? JSON.stringify(value) : String(value)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </section>
-      </div>
-    </div>
+          </Routes>
+        </Router>
+      </AppProvider>
+    </AuthProvider>
   );
 }
 

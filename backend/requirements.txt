@@ -11,5 +11,6 @@ pandas
 scikit-learn
 joblib
 httpx
+firebase-admin
 python-dotenv
-pytest
+pytest
