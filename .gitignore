@@ -84,6 +84,7 @@ htmlcov/
 
 models/
 !backend/app/models/
+!backend/app/models/**
 checkpoints/
 runs/
 wandb/

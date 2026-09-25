@@ -64,7 +64,7 @@ def test_live_settings_require_provider_configuration():
     from backend.app.core.config import Settings
 
     try:
-        Settings(DEMO_MODE=False)
+        Settings(DEMO_MODE=False, DATABASE_URL=None, _env_file=None)
     except ValidationError as exc:
         assert "DATABASE_URL is required" in str(exc)
     else:
