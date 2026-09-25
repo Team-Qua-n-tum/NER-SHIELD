@@ -45,6 +45,17 @@ async def _startup() -> None:
 
 
 # Root level health endpoint for convenience (no prefix collision)
+@app.get("/", tags=["Health"])
+def root():
+    return {
+        "service": settings.PROJECT_NAME,
+        "status": "ok",
+        "docs": "/docs",
+        "health": "/health",
+        "demo_mode": settings.DEMO_MODE,
+    }
+
+
 @app.get("/health", response_model=HealthResponse, tags=["Health"])
 def root_health():
     system = operational_service.system_status()

@@ -14,13 +14,17 @@ import logging
 from typing import Generator, Optional
 
 from sqlalchemy import create_engine, text
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import Session, sessionmaker
 
 from backend.app.core.config import settings
-from backend.app.models.base import Base
-from backend.app.models.notification import NotificationDevice  # noqa: F401
 
 logger = logging.getLogger(__name__)
+
+# The demo service uses the in-memory store and must not require the optional
+# live ORM package at import time. Live deployments should provide the models
+# package before enabling database persistence.
+Base = declarative_base()
 
 # ---------------------------------------------------------------------------
 # Engine creation
@@ -117,6 +121,16 @@ def init_db() -> None:
         logger.info("[NER-SHIELD DB] DEMO_MODE=true — skipping table creation.")
         return
 
+    try:
+        from backend.app.models.base import Base as ModelBase
+        from backend.app.models import notification  # noqa: F401
+    except ModuleNotFoundError as exc:
+        raise RuntimeError(
+            "Live database mode requires the backend.app.models package. "
+            "Set DEMO_MODE=true for the self-contained demo or install the "
+            "live ORM model package."
+        ) from exc
+
     engine = get_engine()
     if engine is None:
         logger.warning("[NER-SHIELD DB] Engine not available; skipping init_db.")
@@ -131,5 +145,5 @@ def init_db() -> None:
     except Exception as exc:
         logger.warning("[NER-SHIELD DB] Could not create PostGIS extension: %s", exc)
 
-    Base.metadata.create_all(bind=engine)
+    ModelBase.metadata.create_all(bind=engine)
     logger.info("[NER-SHIELD DB] Table creation complete.")

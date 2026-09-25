@@ -65,20 +65,6 @@ def validate_ner_bounds(lat: float, lon: float, buffer_deg: float = 1.0) -> bool
     Validate whether (lat, lon) falls within the practical operational NER bounds,
     allowing an optional buffer for viewport panning/zooming.
 
-    Parameters
-    ----------
-    lat : float
-        Latitude in decimal degrees (WGS-84).
-    lon : float
-        Longitude in decimal degrees (WGS-84).
-    buffer_deg : float
-        Operational tolerance buffer in decimal degrees (default 1.0).
-
-    Returns
-    -------
-    bool
-        True if the coordinate falls within the buffered NER envelope.
-
     Raises
     ------
     ValueError

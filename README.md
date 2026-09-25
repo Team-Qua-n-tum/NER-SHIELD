@@ -70,12 +70,11 @@ For deep-dives into the architecture, deployment, and APIs, refer to our detaile
 
 The platform is designed to be easily testable without a complex PostGIS setup using `DEMO_MODE=true`.
 
-1. **Backend**:
+1. **Backend** (run from the repository root):
 
    ```bash
-   cd backend
-   pip install -r requirements.txt
-   uvicorn app.main:app --reload
+   .\.venv\Scripts\python.exe -m pip install -r backend\requirements.txt
+   .\.venv\Scripts\python.exe -m uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8000
    ```
 
 2. **Frontend**:
@@ -85,6 +84,11 @@ The platform is designed to be easily testable without a complex PostGIS setup u
    npm install
    npm run dev
    ```
+
+The frontend uses `VITE_API_URL=http://localhost:8000/api/v1`. See
+[local development](docs/local-development.md) and
+[troubleshooting](docs/troubleshooting.md) for Docker, CORS, deep-link, and
+live-pilot guidance.
 
 ## Workflow
 
@@ -121,19 +125,18 @@ Developed for **Smart India Hackathon 2026 — SIH26002**.
 #### Method 1: Using Docker Compose (Recommended)
 You can launch both the frontend and backend with a single command:
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 Once started:
-- **Frontend Dashboard:** [http://localhost](http://localhost) (also mapped to [http://localhost:5173](http://localhost:5173))
+- **Frontend Dashboard:** [http://localhost:5173](http://localhost:5173)
 - **Backend API Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
 - **Backend Health Endpoint:** [http://localhost:8000/health](http://localhost:8000/health)
 
 #### Method 2: Running Locally (Without Docker)
 
 **Backend Setup:**
-1. Navigate to the backend folder and create a virtual environment:
+1. From the repository root, create a virtual environment:
    ```bash
-   cd backend
    python -m venv .venv
    ```
 2. Activate the virtual environment:
@@ -141,11 +144,11 @@ Once started:
    - **macOS/Linux:** `source .venv/bin/activate`
 3. Install dependencies:
    ```bash
-   pip install -r requirements.txt
+   pip install -r backend/requirements.txt
    ```
 4. Run the FastAPI development server:
    ```bash
-   python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+   python -m uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8000
    ```
 
 **Frontend Setup:**
@@ -207,4 +210,3 @@ NER-SHIELD is split into two isolated services:
 ### ⚠️ Known Limitations & Hacks
 - **Database Persistence:** By default, backend state (such as registered vehicles and submitted incident reports) uses a thread-safe in-memory store. Restarting the backend service resets dynamic updates. Set up Spanner, Spanner PostgreSQL, or standard Postgres for persistent storage.
 - **Routing Source:** Alternates between synthetic route waypoints and cartographic real-road networks for fallback capability.
-

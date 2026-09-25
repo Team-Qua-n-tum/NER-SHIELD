@@ -11,7 +11,6 @@ from sqlalchemy.orm import Session
 from backend.app.core.config import settings
 from backend.app.db.store import db_store
 from backend.app.providers.fcm import FCMProvider
-from backend.app.repositories.notification_repository import NotificationRepository
 from backend.app.schemas.notifications import (
     DeviceListResponse,
     DeviceRegistrationRequest,
@@ -67,6 +66,17 @@ class NotificationService:
             raise HTTPException(status_code=503, detail="Live notification database is unavailable")
         return db
 
+    @staticmethod
+    def _repository(db: Session):
+        try:
+            from backend.app.repositories.notification_repository import NotificationRepository
+        except ModuleNotFoundError as exc:
+            raise HTTPException(
+                status_code=503,
+                detail="Live notification persistence is unavailable; ORM models are not installed",
+            ) from exc
+        return NotificationRepository(db)
+
     def register(self, request: DeviceRegistrationRequest, db: Optional[Session]) -> DeviceRegistrationResponse:
         now = utc_now()
         token_fingerprint = _fingerprint(request.token)
@@ -93,7 +103,7 @@ class NotificationService:
                 db_store.notification_devices[device["id"]] = device
             return _device_response(device, "demo")
 
-        repository = NotificationRepository(self._require_live_db(db))
+        repository = self._repository(self._require_live_db(db))
         device = repository.upsert({
             "token": request.token,
             "token_fingerprint": token_fingerprint,
@@ -113,7 +123,7 @@ class NotificationService:
                 total=len(devices),
                 devices=[_device_response(device, "demo") for device in devices],
             )
-        repository = NotificationRepository(self._require_live_db(db))
+        repository = self._repository(self._require_live_db(db))
         devices = repository.list_active()
         return DeviceListResponse(
             total=len(devices),
@@ -128,7 +138,7 @@ class NotificationService:
                     raise HTTPException(status_code=404, detail="Notification device not found")
                 device["active"] = False
             return
-        if not NotificationRepository(self._require_live_db(db)).deactivate(device_id):
+        if not self._repository(self._require_live_db(db)).deactivate(device_id):
             raise HTTPException(status_code=404, detail="Notification device not found")
 
     def send(self, request: NotificationSendRequest, db: Optional[Session]) -> NotificationSendResponse:
@@ -142,7 +152,7 @@ class NotificationService:
             ]
         else:
             devices = [
-                device for device in NotificationRepository(self._require_live_db(db)).list_active()
+                device for device in self._repository(self._require_live_db(db)).list_active()
                 if request.notification_type in device.notification_types
                 and (not request.district_ids or not device.district_ids
                      or set(request.district_ids) & set(device.district_ids))
