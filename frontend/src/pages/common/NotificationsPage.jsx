@@ -35,22 +35,32 @@ export const NotificationsPage = () => {
       {/* Settings Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-sm font-bold text-white">
-              <Radio className="w-4 h-4 text-cyan-400" />
-              <span>Browser Push Dispatch</span>
+              <Radio className="w-4 h-4 text-cyan-400 shrink-0" aria-hidden="true" />
+              <label htmlFor="toggle-push-dispatch" className="cursor-pointer">
+                Browser Push Dispatch
+              </label>
             </div>
             <button
+              id="toggle-push-dispatch"
+              type="button"
+              aria-pressed={pushEnabled}
+              aria-label={`Browser Push Dispatch, currently ${pushEnabled ? 'enabled' : 'disabled'}. Click to ${pushEnabled ? 'disable' : 'enable'}.`}
               onClick={handleTogglePush}
-              className={`w-12 h-6 rounded-full transition-colors relative ${
-                pushEnabled ? 'bg-cyan-600' : 'bg-slate-700'
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
+                pushEnabled
+                  ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-300 hover:bg-cyan-500/25'
+                  : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-slate-200'
               }`}
             >
-              <div
-                className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${
-                  pushEnabled ? 'right-1' : 'left-1'
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  pushEnabled ? 'bg-cyan-400 ring-2 ring-cyan-400/30' : 'bg-slate-500'
                 }`}
+                aria-hidden="true"
               />
+              <span>{pushEnabled ? 'Emergency alerts enabled' : 'Emergency alerts disabled'}</span>
             </button>
           </div>
           <p className="text-xs text-slate-400 leading-relaxed">
@@ -59,22 +69,41 @@ export const NotificationsPage = () => {
         </div>
 
         <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-sm font-bold text-white">
-              <Volume2 className="w-4 h-4 text-emerald-400" />
-              <span>Audio Dispatch Chime</span>
+              <Volume2 className="w-4 h-4 text-emerald-400 shrink-0" aria-hidden="true" />
+              <label htmlFor="toggle-audio-chime" className="cursor-pointer">
+                Audio Dispatch Chime
+              </label>
             </div>
             <button
-              onClick={() => setSoundEnabled(!soundEnabled)}
-              className={`w-12 h-6 rounded-full transition-colors relative ${
-                soundEnabled ? 'bg-emerald-600' : 'bg-slate-700'
+              id="toggle-audio-chime"
+              type="button"
+              aria-pressed={soundEnabled}
+              aria-label={`Audio Dispatch Chime, currently ${soundEnabled ? 'enabled' : 'disabled'}. Click to ${soundEnabled ? 'disable' : 'enable'}.`}
+              onClick={() => {
+                const nextState = !soundEnabled;
+                setSoundEnabled(nextState);
+                showToast(
+                  nextState
+                    ? 'Audio dispatch chime enabled for emergency alerts.'
+                    : 'Audio dispatch chime muted.',
+                  'info'
+                );
+              }}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                soundEnabled
+                  ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/25'
+                  : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-slate-200'
               }`}
             >
-              <div
-                className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${
-                  soundEnabled ? 'right-1' : 'left-1'
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  soundEnabled ? 'bg-emerald-400 ring-2 ring-emerald-400/30' : 'bg-slate-500'
                 }`}
+                aria-hidden="true"
               />
+              <span>{soundEnabled ? 'Audio dispatch chime enabled' : 'Audio dispatch chime disabled'}</span>
             </button>
           </div>
           <p className="text-xs text-slate-400 leading-relaxed">

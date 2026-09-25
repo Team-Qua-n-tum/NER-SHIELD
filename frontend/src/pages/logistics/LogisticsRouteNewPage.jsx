@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Route, Navigation, AlertTriangle, RefreshCw, CheckCircle2, Clock, ShieldAlert, ArrowRight } from 'lucide-react';
+import { Route, Navigation, RefreshCw, CheckCircle2, ShieldAlert } from 'lucide-react';
 import { routesApi } from '../../lib/api/routesApi';
 import { useApp } from '../../context/AppContext';
+import { RouteSourceCard } from '../../components/route/RouteSourceCard';
 
 const DISTRICT_OPTIONS = [
   { id: 'dist-guwahati', name: 'Guwahati Hub (Assam)' },
@@ -121,15 +122,19 @@ export const LogisticsRouteNewPage = () => {
 
       {/* Error state */}
       {routeError && (
-        <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-xs text-red-400 flex items-center justify-between">
-          <span>{routeError}</span>
-          <button onClick={handleRecalculate} className="underline font-bold">Retry</button>
+        <div className="space-y-2">
+          <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-xs text-red-400 flex items-center justify-between">
+            <span>{routeError}</span>
+            <button onClick={handleRecalculate} className="underline font-bold">Retry</button>
+          </div>
+          <RouteSourceCard routeError={routeError} />
         </div>
       )}
 
       {/* Results */}
       {routeResult && (
         <div className="space-y-4">
+          <RouteSourceCard routeResult={routeResult} />
           {routeResult.status === 'no_route' ? (
             <div className="p-6 rounded-3xl bg-red-950/30 border border-red-500/30 text-center space-y-4 shadow-xl">
               <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center mx-auto text-red-400">

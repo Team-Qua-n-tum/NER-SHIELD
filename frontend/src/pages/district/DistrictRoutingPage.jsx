@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Route, Navigation, ArrowRight, ShieldAlert, CheckCircle2, Clock } from 'lucide-react';
+import { Route, Navigation, CheckCircle2 } from 'lucide-react';
 import { routesApi } from '../../lib/api/routesApi';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
+import { RouteSourceCard } from '../../components/route/RouteSourceCard';
 
 export const DistrictRoutingPage = () => {
   const { user } = useAuth();
@@ -57,6 +58,7 @@ export const DistrictRoutingPage = () => {
 
         {routeResult && (
           <div className="border-t border-slate-800/80 pt-4 space-y-3">
+            <RouteSourceCard routeResult={routeResult} />
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4" />

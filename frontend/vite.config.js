@@ -8,6 +8,9 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    env: {
+      VITE_DEMO_MODE: 'true',
+    },
     setupFiles: './src/tests/setup.js',
     fileParallelism: false,
     pool: 'threads',

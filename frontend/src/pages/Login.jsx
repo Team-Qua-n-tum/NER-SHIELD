@@ -16,11 +16,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { DEMO_USERS, DEMO_MODE, ROLE_META } from '../lib/demoUsers';
+import { DEMO_USERS, ROLE_META } from '../lib/demoUsers';
 import {
   Shield, Eye, EyeOff, ArrowLeft, ArrowRight,
   Lock, Mail, Loader2, AlertCircle, FlaskConical,
-  Radio, Package, MapPin, User, Sparkles, ChevronDown
+  Radio, ChevronDown
 } from 'lucide-react';
 
 const PORTAL_CONFIG = {
